@@ -29,8 +29,12 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 
-open class CycleRecyclerTabLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
-        RecyclerView(context, attrs, defStyle) {
+open class CycleRecyclerTabLayout @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) :
+    RecyclerView(context, attrs, defStyle) {
 
     protected var mIndicatorPaint: Paint
     protected var mTabBackgroundResId: Int = 0
@@ -60,9 +64,10 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(context: Context, at
     protected var mScrollEnabled: Boolean = false
     private var mOldPosition: Int = 0
     private var mOldScrollOffset: Int = 0
-
     private val isLayoutRtl: Boolean
         get() = ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL
+    private var mLoopCount = IndicatorConfig.LOOP_COUNT
+    private lateinit var mCycleIndicatorRecyclerAdapter: CycleIndicatorRecyclerAdapter
 
     init {
         setWillNotDraw(false)
@@ -80,47 +85,66 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(context: Context, at
     }
 
     private fun getAttributes(context: Context, attrs: AttributeSet, defStyle: Int) {
-        val a = context.obtainStyledAttributes(attrs, R.styleable.rtl_RecyclerTabLayout,
-                defStyle, R.style.rtl_RecyclerTabLayout)
-        setIndicatorColor(a.getColor(R.styleable
-                .rtl_RecyclerTabLayout_rtl_tabIndicatorColor, 0))
-        setIndicatorHeight(a.getDimensionPixelSize(R.styleable
-                .rtl_RecyclerTabLayout_rtl_tabIndicatorHeight, 0))
+        val a = context.obtainStyledAttributes(
+            attrs, R.styleable.rtl_RecyclerTabLayout,
+            defStyle, R.style.rtl_RecyclerTabLayout
+        )
+        setIndicatorColor(
+            a.getColor(
+                R.styleable
+                    .rtl_RecyclerTabLayout_rtl_tabIndicatorColor, 0
+            )
+        )
+        setIndicatorHeight(
+            a.getDimensionPixelSize(
+                R.styleable
+                    .rtl_RecyclerTabLayout_rtl_tabIndicatorHeight, 0
+            )
+        )
 
-        mTabTextAppearance = a.getResourceId(R.styleable.rtl_RecyclerTabLayout_rtl_tabTextAppearance,
-                R.style.rtl_RecyclerTabLayout_Tab)
+        mTabTextAppearance = a.getResourceId(
+            R.styleable.rtl_RecyclerTabLayout_rtl_tabTextAppearance,
+            R.style.rtl_RecyclerTabLayout_Tab
+        )
 
         mTabPaddingBottom = a
-                .getDimensionPixelSize(R.styleable.rtl_RecyclerTabLayout_rtl_tabPadding, 0)
+            .getDimensionPixelSize(R.styleable.rtl_RecyclerTabLayout_rtl_tabPadding, 0)
         mTabPaddingEnd = mTabPaddingBottom
         mTabPaddingTop = mTabPaddingEnd
         mTabPaddingStart = mTabPaddingTop
         mTabPaddingStart = a.getDimensionPixelSize(
-                R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingStart, mTabPaddingStart)
+            R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingStart, mTabPaddingStart
+        )
         mTabPaddingTop = a.getDimensionPixelSize(
-                R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingTop, mTabPaddingTop)
+            R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingTop, mTabPaddingTop
+        )
         mTabPaddingEnd = a.getDimensionPixelSize(
-                R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingEnd, mTabPaddingEnd)
+            R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingEnd, mTabPaddingEnd
+        )
         mTabPaddingBottom = a.getDimensionPixelSize(
-                R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingBottom, mTabPaddingBottom)
+            R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingBottom, mTabPaddingBottom
+        )
 
         if (a.hasValue(R.styleable.rtl_RecyclerTabLayout_rtl_tabSelectedTextColor)) {
             mTabSelectedTextColor = a
-                    .getColor(R.styleable.rtl_RecyclerTabLayout_rtl_tabSelectedTextColor, 0)
+                .getColor(R.styleable.rtl_RecyclerTabLayout_rtl_tabSelectedTextColor, 0)
             mTabSelectedTextColorSet = true
         }
 
         mTabOnScreenLimit = a.getInteger(
-                R.styleable.rtl_RecyclerTabLayout_rtl_tabOnScreenLimit, 0)
+            R.styleable.rtl_RecyclerTabLayout_rtl_tabOnScreenLimit, 0
+        )
         if (mTabOnScreenLimit == 0) {
             mTabMinWidth = a.getDimensionPixelSize(
-                    R.styleable.rtl_RecyclerTabLayout_rtl_tabMinWidth, 0)
+                R.styleable.rtl_RecyclerTabLayout_rtl_tabMinWidth, 0
+            )
             mTabMaxWidth = a.getDimensionPixelSize(
-                    R.styleable.rtl_RecyclerTabLayout_rtl_tabMaxWidth, 0)
+                R.styleable.rtl_RecyclerTabLayout_rtl_tabMaxWidth, 0
+            )
         }
 
         mTabBackgroundResId = a
-                .getResourceId(R.styleable.rtl_RecyclerTabLayout_rtl_tabBackground, 0)
+            .getResourceId(R.styleable.rtl_RecyclerTabLayout_rtl_tabBackground, 0)
         mScrollEnabled = a.getBoolean(R.styleable.rtl_RecyclerTabLayout_rtl_scrollEnabled, true)
         a.recycle()
     }
@@ -160,13 +184,22 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(context: Context, at
 
     fun setUpWithViewPager(context: Context, titlesItems: List<String>, viewPager: ViewPager) {
         mViewPager = viewPager
-        val adapter = CycleIndicatorRecyclerAdapter(context, titlesItems)
-        adapter.onItemListener = object : CycleIndicatorRecyclerAdapter.OnIndicatorItemListener {
-            override fun onItemPositionClicked(positionIndex: Int, realPosition: Int) {
-                viewPager.currentItem = positionIndex
+        mCycleIndicatorRecyclerAdapter = CycleIndicatorRecyclerAdapter(context, titlesItems)
+        setUpWithAdapter(mCycleIndicatorRecyclerAdapter.apply {
+            onItemListener = object : CycleIndicatorRecyclerAdapter.OnIndicatorItemListener {
+                override fun onItemPositionClicked(positionIndex: Int, realPosition: Int) {
+                    viewPager.currentItem = positionIndex
+                }
             }
-        }
-        setUpWithAdapter(adapter)
+            textTitleColor = mTabSelectedTextColor
+        })
+    }
+
+    fun getItemCenterPosition(realPosition: Int): Int {
+        val targetCenterPosition =
+            mCycleIndicatorRecyclerAdapter.getRealPosition(mCycleIndicatorRecyclerAdapter.itemCount / 2)
+        val range = realPosition - targetCenterPosition
+        return mCycleIndicatorRecyclerAdapter.itemCount / 2 + range
     }
 
     private fun setUpWithAdapter(adapter: Adapter<*>) {
@@ -229,7 +262,7 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(context: Context, at
         if (selectedView != null) {
             val width = measuredWidth
             val sLeft =
-                    if (position == 0) 0F else width / 2f - selectedView.measuredWidth / 2f // left edge of selected tab
+                if (position == 0) 0F else width / 2f - selectedView.measuredWidth / 2f // left edge of selected tab
             val sRight = sLeft + selectedView.measuredWidth // right edge of selected tab
 
             if (nextView != null) {
@@ -331,8 +364,8 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(context: Context, at
     }
 
     protected open class RecyclerOnScrollListener(
-            private var mRecyclerTabLayout: CycleRecyclerTabLayout,
-            private var mLinearLayoutManager: LinearLayoutManager
+        private var mRecyclerTabLayout: CycleRecyclerTabLayout,
+        private var mLinearLayoutManager: LinearLayoutManager
     ) : RecyclerView.OnScrollListener() {
 
         var mDx: Int = 0
@@ -384,7 +417,7 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(context: Context, at
     private var viewPagerListener: ViewPagerOnPageChangeListener? = null
 
     open class ViewPagerOnPageChangeListener(private val mRecyclerTabLayout: CycleRecyclerTabLayout) :
-            ViewPager.OnPageChangeListener {
+        ViewPager.OnPageChangeListener {
         private var mScrollState: Int = 0
 
         override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {

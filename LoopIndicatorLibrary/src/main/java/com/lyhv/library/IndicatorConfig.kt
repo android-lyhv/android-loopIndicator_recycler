@@ -5,5 +5,5 @@ package com.lyhv.library
  * Copyright @ est-rouge. All rights reserved
  */
 object IndicatorConfig {
-    const val LOOP_COUNT = 10 * 100 * 100
+    const val LOOP_COUNT = 10000
 }
