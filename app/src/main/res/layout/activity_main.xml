@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="60dp" />
 
-    <com.lyhv.library.MyRecyclerTabLayout
+    <com.lyhv.library.CycleRecyclerTabLayout
         android:id="@+id/myRecyclerTabLayout"
         android:layout_width="match_parent"
         android:layout_height="60dp" />

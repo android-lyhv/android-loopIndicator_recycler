@@ -29,7 +29,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 
-open class MyRecyclerTabLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
+open class CycleRecyclerTabLayout @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null, defStyle: Int = 0) :
         RecyclerView(context, attrs, defStyle) {
 
     protected var mIndicatorPaint: Paint
@@ -57,7 +57,7 @@ open class MyRecyclerTabLayout @JvmOverloads constructor(context: Context, attrs
     protected var mOldPositionOffset: Float = 0.toFloat()
     protected var mPositionThreshold: Float = 0.toFloat()
     protected var mRequestScrollToTab: Boolean = false
-    protected var mScrollEanbled: Boolean = false
+    protected var mScrollEnabled: Boolean = false
     private var mOldPosition: Int = 0
     private var mOldScrollOffset: Int = 0
 
@@ -70,7 +70,7 @@ open class MyRecyclerTabLayout @JvmOverloads constructor(context: Context, attrs
         getAttributes(context, attrs!!, defStyle)
         mLinearLayoutManager = object : LinearLayoutManager(getContext()) {
             override fun canScrollHorizontally(): Boolean {
-                return mScrollEanbled
+                return mScrollEnabled
             }
         }
         mLinearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
@@ -121,7 +121,7 @@ open class MyRecyclerTabLayout @JvmOverloads constructor(context: Context, attrs
 
         mTabBackgroundResId = a
                 .getResourceId(R.styleable.rtl_RecyclerTabLayout_rtl_tabBackground, 0)
-        mScrollEanbled = a.getBoolean(R.styleable.rtl_RecyclerTabLayout_rtl_scrollEnabled, true)
+        mScrollEnabled = a.getBoolean(R.styleable.rtl_RecyclerTabLayout_rtl_scrollEnabled, true)
         a.recycle()
     }
 
@@ -160,8 +160,8 @@ open class MyRecyclerTabLayout @JvmOverloads constructor(context: Context, attrs
 
     fun setUpWithViewPager(context: Context, titlesItems: List<String>, viewPager: ViewPager) {
         mViewPager = viewPager
-        val adapter = IndicatorRecyclerAdapter(context, titlesItems)
-        adapter.onItemListener = object : IndicatorRecyclerAdapter.OnIndicatorItemListener {
+        val adapter = CycleIndicatorRecyclerAdapter(context, titlesItems)
+        adapter.onItemListener = object : CycleIndicatorRecyclerAdapter.OnIndicatorItemListener {
             override fun onItemPositionClicked(positionIndex: Int, realPosition: Int) {
                 viewPager.currentItem = positionIndex
             }
@@ -331,7 +331,7 @@ open class MyRecyclerTabLayout @JvmOverloads constructor(context: Context, attrs
     }
 
     protected open class RecyclerOnScrollListener(
-            private var mRecyclerTabLayout: MyRecyclerTabLayout,
+            private var mRecyclerTabLayout: CycleRecyclerTabLayout,
             private var mLinearLayoutManager: LinearLayoutManager
     ) : RecyclerView.OnScrollListener() {
 
@@ -383,7 +383,7 @@ open class MyRecyclerTabLayout @JvmOverloads constructor(context: Context, attrs
 
     private var viewPagerListener: ViewPagerOnPageChangeListener? = null
 
-    open class ViewPagerOnPageChangeListener(private val mRecyclerTabLayout: MyRecyclerTabLayout) :
+    open class ViewPagerOnPageChangeListener(private val mRecyclerTabLayout: CycleRecyclerTabLayout) :
             ViewPager.OnPageChangeListener {
         private var mScrollState: Int = 0
 

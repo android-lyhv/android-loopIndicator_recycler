@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class IndicatorRecyclerAdapter(context: Context, var titles: List<String>, var loopCount: Int = IndicatorConfig.LOOP_COUNT) :
-        MyRecyclerTabLayout.Adapter<IndicatorRecyclerAdapter.IndicatorViewHolder>(context) {
+class CycleIndicatorRecyclerAdapter(context: Context, var titles: List<String>, var loopCount: Int = IndicatorConfig.LOOP_COUNT) :
+        CycleRecyclerTabLayout.Adapter<CycleIndicatorRecyclerAdapter.IndicatorViewHolder>(context) {
     var onItemListener: OnIndicatorItemListener? = null
 
 
