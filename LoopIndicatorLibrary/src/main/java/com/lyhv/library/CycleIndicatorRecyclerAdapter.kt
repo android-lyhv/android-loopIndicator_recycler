@@ -8,10 +8,14 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class CycleIndicatorRecyclerAdapter(context: Context, var titles: List<String>, var loopCount: Int = IndicatorConfig.LOOP_COUNT) :
-        CycleRecyclerTabLayout.Adapter<CycleIndicatorRecyclerAdapter.IndicatorViewHolder>(context) {
+class CycleIndicatorRecyclerAdapter(
+    context: Context,
+    var titles: List<String>,
+    var loopCount: Int = IndicatorConfig.LOOP_COUNT
+) :
+    CycleRecyclerTabLayout.Adapter<CycleIndicatorRecyclerAdapter.IndicatorViewHolder>(context) {
     var onItemListener: OnIndicatorItemListener? = null
-
+    var textTitleColor: Int = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IndicatorViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.indicator_view, parent, false)
@@ -31,6 +35,10 @@ class CycleIndicatorRecyclerAdapter(context: Context, var titles: List<String>, 
 
     inner class IndicatorViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         var tvTitle: TextView = itemView.findViewById(R.id.tvTitle)
+
+        init {
+            tvTitle.setTextColor(textTitleColor)
+        }
 
         init {
             itemView.setOnClickListener {

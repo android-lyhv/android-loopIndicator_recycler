@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.lyhv.library.IndicatorConfig
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
     private lateinit var mMyPagerAdapter: MyPagerAdapter
@@ -21,7 +22,7 @@ class MainActivity : AppCompatActivity() {
         for (index in 0 until mMyPagerAdapter.getRealItemSize()) {
             titleItems.add("Index $index")
         }
-        viewPager.currentItem = IndicatorConfig.LOOP_COUNT / 2
         myRecyclerTabLayout.setUpWithViewPager(this, titleItems, viewPager)
+        viewPager.currentItem =myRecyclerTabLayout.getItemCenterPosition(Random.nextInt(mMyPagerAdapter.getRealItemSize()))
     }
 }
