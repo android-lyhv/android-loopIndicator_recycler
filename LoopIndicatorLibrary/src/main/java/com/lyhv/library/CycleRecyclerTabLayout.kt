@@ -28,6 +28,7 @@ import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
+import java.util.*
 
 open class CycleRecyclerTabLayout @JvmOverloads constructor(
     context: Context,
@@ -337,7 +338,14 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas) {
-        val view = mLinearLayoutManager.findViewByPosition(mIndicatorPosition)
+        val indicators = getIndicatorPositions(mIndicatorPosition)
+        for (index in indicators) {
+            onDrawIndicator(canvas, index)
+        }
+    }
+
+    private fun onDrawIndicator(canvas: Canvas, index: Int) {
+        val view = mLinearLayoutManager.findViewByPosition(index)
         if (view == null) {
             if (mRequestScrollToTab) {
                 mRequestScrollToTab = false
@@ -361,6 +369,18 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
         val bottom = height
 
         canvas.drawRect(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat(), mIndicatorPaint)
+    }
+
+    private fun getIndicatorPositions(indicatorPositionTarget: Int): HashSet<Int> {
+        val realPosition = mCycleIndicatorRecyclerAdapter.getRealPosition(indicatorPositionTarget)
+        val indicators = HashSet<Int>()
+        mCycleIndicatorRecyclerAdapter.itemCount
+        for (index in 0 until mCycleIndicatorRecyclerAdapter.itemCount) {
+            if (mCycleIndicatorRecyclerAdapter.getRealPosition(index) == realPosition) {
+                indicators.add(index)
+            }
+        }
+        return indicators
     }
 
     protected open class RecyclerOnScrollListener(
