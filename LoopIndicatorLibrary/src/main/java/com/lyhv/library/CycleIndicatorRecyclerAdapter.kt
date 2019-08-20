@@ -12,10 +12,15 @@ class CycleIndicatorRecyclerAdapter(
     context: Context,
     var titles: List<String>,
     var loopCount: Int = IndicatorConfig.LOOP_COUNT
+
 ) :
     CycleRecyclerTabLayout.Adapter<CycleIndicatorRecyclerAdapter.IndicatorViewHolder>(context) {
     var onItemListener: OnIndicatorItemListener? = null
     var textTitleColor: Int = 0
+    protected var mTabSelectedTextColorSet: Boolean = false
+    protected var mTabSelectedTextColor: Int = 0
+    protected var mTabNormalTextColorSet: Boolean = false
+    protected var mTabNormalTextColor: Int = 0
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IndicatorViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.indicator_view, parent, false)
@@ -50,7 +55,28 @@ class CycleIndicatorRecyclerAdapter(
         fun onBind() {
             val realPosition = getRealPosition(adapterPosition)
             tvTitle.text = titles[realPosition]
+            if(tvTitle.isSelected){
+                tvTitle.setTextColor(mTabSelectedTextColor)
+            } else {
+                tvTitle.setTextColor(mTabNormalTextColor)
+            }
         }
+    }
+
+    fun setTabSelectedTextColor(
+        tabSelectedTextColorSet: Boolean,
+        tabSelectedTextColor: Int
+    ) {
+        mTabSelectedTextColorSet = tabSelectedTextColorSet
+        mTabSelectedTextColor = tabSelectedTextColor
+    }
+
+    fun setTabNormalTextColor(
+        tabNormalTextColorSet: Boolean,
+        tabNormalTextColor: Int
+    ) {
+        mTabNormalTextColorSet = tabNormalTextColorSet
+        mTabNormalTextColor = tabNormalTextColor
     }
 
     fun getRealPosition(position: Int) = position.rem(titles.size)

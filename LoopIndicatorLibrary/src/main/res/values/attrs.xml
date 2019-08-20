@@ -3,11 +3,14 @@
     <declare-styleable name="rtl_RecyclerTabLayout">
         <attr name="rtl_tabIndicatorColor" format="color" />
         <attr name="rtl_tabIndicatorHeight" format="dimension" />
+        <attr name="rtl_tabIndicatorCorner" format="dimension" />
+        <attr name="rtl_tabIndicatorPadding" format="dimension" />
 
         <attr name="rtl_tabBackground" format="reference" />
 
         <attr name="rtl_tabTextAppearance" format="reference" />
         <attr name="rtl_tabSelectedTextColor" format="color" />
+        <attr name="rtl_tabNormalTextColor" format="color"/>
 
         <attr name="rtl_tabOnScreenLimit" format="integer" />
         <attr name="rtl_tabMinWidth" format="dimension" />

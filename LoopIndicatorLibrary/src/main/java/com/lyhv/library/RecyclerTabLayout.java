@@ -22,6 +22,7 @@ import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.RectF;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.Gravity;
@@ -48,12 +49,16 @@ public class RecyclerTabLayout extends RecyclerView {
     protected int mTabMaxWidth;
     protected int mTabTextAppearance;
     protected int mTabSelectedTextColor;
+    protected int mTabNormalTextColor;
     protected boolean mTabSelectedTextColorSet;
+    protected boolean mTabNormalTextColorSet;
     protected int mTabPaddingStart;
     protected int mTabPaddingTop;
     protected int mTabPaddingEnd;
     protected int mTabPaddingBottom;
     protected int mIndicatorHeight;
+    protected int mIndicatorCorner;
+    protected int mIndicatorPadding;
 
     protected LinearLayoutManager mLinearLayoutManager;
     protected RecyclerOnScrollListener mRecyclerOnScrollListener;
@@ -102,7 +107,10 @@ public class RecyclerTabLayout extends RecyclerView {
                 .rtl_RecyclerTabLayout_rtl_tabIndicatorColor, 0));
         setIndicatorHeight(a.getDimensionPixelSize(R.styleable
                 .rtl_RecyclerTabLayout_rtl_tabIndicatorHeight, 0));
-
+        setmIndicatorCorner(a.getDimensionPixelSize(R.styleable
+                .rtl_RecyclerTabLayout_rtl_tabIndicatorCorner, 0));
+        setmIndicatorPadding(a.getDimensionPixelSize(R.styleable
+                .rtl_RecyclerTabLayout_rtl_tabIndicatorPadding, 0));
         mTabTextAppearance = a.getResourceId(R.styleable.rtl_RecyclerTabLayout_rtl_tabTextAppearance,
                 R.style.rtl_RecyclerTabLayout_Tab);
 
@@ -122,7 +130,11 @@ public class RecyclerTabLayout extends RecyclerView {
                     .getColor(R.styleable.rtl_RecyclerTabLayout_rtl_tabSelectedTextColor, 0);
             mTabSelectedTextColorSet = true;
         }
-
+        if (a.hasValue(R.styleable.rtl_RecyclerTabLayout_rtl_tabNormalTextColor)) {
+            mTabNormalTextColor = a
+                    .getColor(R.styleable.rtl_RecyclerTabLayout_rtl_tabNormalTextColor, 0);
+            mTabNormalTextColorSet = true;
+        }
         mTabOnScreenLimit = a.getInteger(
                 R.styleable.rtl_RecyclerTabLayout_rtl_tabOnScreenLimit, 0);
         if (mTabOnScreenLimit == 0) {
@@ -156,6 +168,14 @@ public class RecyclerTabLayout extends RecyclerView {
         mIndicatorHeight = indicatorHeight;
     }
 
+    public void setmIndicatorCorner(int mIndicatorCorner) {
+        this.mIndicatorCorner = mIndicatorCorner;
+    }
+
+    public void setmIndicatorPadding(int mIndicatorPadding) {
+        this.mIndicatorPadding = mIndicatorPadding;
+    }
+
     public void setAutoSelectionMode(boolean autoSelect) {
         if (mRecyclerOnScrollListener != null) {
             removeOnScrollListener(mRecyclerOnScrollListener);
@@ -176,6 +196,7 @@ public class RecyclerTabLayout extends RecyclerView {
         adapter.setTabPadding(mTabPaddingStart, mTabPaddingTop, mTabPaddingEnd, mTabPaddingBottom);
         adapter.setTabTextAppearance(mTabTextAppearance);
         adapter.setTabSelectedTextColor(mTabSelectedTextColorSet, mTabSelectedTextColor);
+        adapter.setTabNormalTextColor(mTabNormalTextColorSet, mTabNormalTextColor);
         adapter.setTabMaxWidth(mTabMaxWidth);
         adapter.setTabMinWidth(mTabMinWidth);
         adapter.setTabBackgroundResId(mTabBackgroundResId);
@@ -346,10 +367,11 @@ public class RecyclerTabLayout extends RecyclerView {
             right = view.getRight() + mIndicatorScroll + mIndicatorGap;
         }
 
-        int top = getHeight() - mIndicatorHeight;
-        int bottom = getHeight();
+        int top = (getHeight() - mIndicatorHeight) / 2;
+        int bottom = top + mIndicatorHeight;
 
-        canvas.drawRect(left, top, right, bottom, mIndicatorPaint);
+        RectF rect = new RectF(left, top, right, bottom);
+        canvas.drawRoundRect(rect, mIndicatorCorner, mIndicatorCorner, mIndicatorPaint);
     }
 
     protected boolean isLayoutRtl() {
@@ -479,7 +501,9 @@ public class RecyclerTabLayout extends RecyclerView {
         protected int mTabPaddingBottom;
         protected int mTabTextAppearance;
         protected boolean mTabSelectedTextColorSet;
+        protected boolean mTabNormalTextColorSet;
         protected int mTabSelectedTextColor;
+        protected int mTabNormalTextColor;
         private int mTabMaxWidth;
         private int mTabMinWidth;
         private int mTabBackgroundResId;
@@ -559,6 +583,12 @@ public class RecyclerTabLayout extends RecyclerView {
                                             int tabSelectedTextColor) {
             mTabSelectedTextColorSet = tabSelectedTextColorSet;
             mTabSelectedTextColor = tabSelectedTextColor;
+        }
+
+        public void setTabNormalTextColor(boolean tabNormalTextColorSet,
+                                          int tabNormalTextColor) {
+            mTabNormalTextColorSet = tabNormalTextColorSet;
+            mTabNormalTextColor = tabNormalTextColor;
         }
 
         public void setTabMaxWidth(int tabMaxWidth) {
