@@ -23,6 +23,7 @@ import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
+import android.graphics.RectF
 import android.util.AttributeSet
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -44,12 +45,16 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
     protected var mTabMaxWidth: Int = 0
     protected var mTabTextAppearance: Int = 0
     protected var mTabSelectedTextColor: Int = 0
+    protected var mTabNormalTextColor: Int = 0
     protected var mTabSelectedTextColorSet: Boolean = false
+    protected var mTabNormalTextColorSet: Boolean = false
     protected var mTabPaddingStart: Int = 0
     protected var mTabPaddingTop: Int = 0
     protected var mTabPaddingEnd: Int = 0
     protected var mTabPaddingBottom: Int = 0
     protected var mIndicatorHeight: Int = 0
+    protected var mIndicatorRadius: Int = 0
+    protected var mIndicatorPadding: Int = 0
 
     protected var mLinearLayoutManager: LinearLayoutManager
     protected var mRecyclerOnScrollListener: RecyclerOnScrollListener? = null
@@ -103,6 +108,18 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
             )
         )
 
+        setIndicatorPadding(
+            a.getDimensionPixelSize(
+                R.styleable
+                    .rtl_RecyclerTabLayout_rtl_tabIndicatorPadding, 0
+            )
+        )
+        setIndicatorRadius(
+            a.getDimensionPixelSize(
+                R.styleable
+                    .rtl_RecyclerTabLayout_rtl_tabIndicatorCorner, 0
+            )
+        )
         mTabTextAppearance = a.getResourceId(
             R.styleable.rtl_RecyclerTabLayout_rtl_tabTextAppearance,
             R.style.rtl_RecyclerTabLayout_Tab
@@ -132,6 +149,11 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
             mTabSelectedTextColorSet = true
         }
 
+        if (a.hasValue(R.styleable.rtl_RecyclerTabLayout_rtl_tabNormalTextColor)) {
+            mTabNormalTextColor = a
+                .getColor(R.styleable.rtl_RecyclerTabLayout_rtl_tabNormalTextColor, 0)
+            mTabNormalTextColorSet = true
+        }
         mTabOnScreenLimit = a.getInteger(
             R.styleable.rtl_RecyclerTabLayout_rtl_tabOnScreenLimit, 0
         )
@@ -168,6 +190,14 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
         mIndicatorHeight = indicatorHeight
     }
 
+    private fun setIndicatorPadding(indicatorPadding: Int) {
+        mIndicatorPadding = indicatorPadding;
+    }
+
+    private fun setIndicatorRadius(indicatorRadius: Int) {
+        mIndicatorRadius = indicatorRadius;
+    }
+
     fun setAutoSelectionMode(autoSelect: Boolean) {
         if (mRecyclerOnScrollListener != null) {
             removeOnScrollListener(mRecyclerOnScrollListener!!)
@@ -193,6 +223,8 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
                 }
             }
             textTitleColor = mTabSelectedTextColor
+            setTabNormalTextColor(mTabNormalTextColorSet, mTabNormalTextColor)
+            setTabSelectedTextColor(mTabSelectedTextColorSet, mTabSelectedTextColor)
         })
     }
 
@@ -365,10 +397,11 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
             right = view.right + mIndicatorScroll + mIndicatorGap
         }
 
-        val top = height - mIndicatorHeight
-        val bottom = height
+        val top = (height - mIndicatorHeight) / 2
+        val bottom = top + mIndicatorHeight
 
-        canvas.drawRect(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat(), mIndicatorPaint)
+        val rect = RectF(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat())
+        canvas.drawRoundRect(rect, mIndicatorRadius.toFloat(), mIndicatorRadius.toFloat(), mIndicatorPaint)
     }
 
     private fun getIndicatorPositions(indicatorPositionTarget: Int): HashSet<Int> {

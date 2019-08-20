@@ -10,7 +10,7 @@ import com.lyhv.library.CycleFragmentStatePagerAdapter
  */
 class MyPagerAdapter(fm: FragmentManager) : CycleFragmentStatePagerAdapter(fm) {
     override fun getRealItemSize(): Int {
-        return 10
+        return 14
     }
 
     override fun getRealItem(position: Int): Fragment {
