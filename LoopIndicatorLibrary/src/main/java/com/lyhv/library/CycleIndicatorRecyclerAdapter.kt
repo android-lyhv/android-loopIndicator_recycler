@@ -10,9 +10,8 @@ import androidx.recyclerview.widget.RecyclerView
 
 class CycleIndicatorRecyclerAdapter(
     context: Context,
-    var titles: List<String>,
+    var cycleFragmentStatePagerAdapter: CycleFragmentStatePagerAdapter,
     var loopCount: Int = IndicatorConfig.LOOP_COUNT
-
 ) :
     CycleRecyclerTabLayout.Adapter<CycleIndicatorRecyclerAdapter.IndicatorViewHolder>(context) {
     var onItemListener: OnIndicatorItemListener? = null
@@ -34,7 +33,7 @@ class CycleIndicatorRecyclerAdapter(
 
 
     override fun getItemCount(): Int {
-        return titles.size * loopCount
+        return cycleFragmentStatePagerAdapter.getRealItemSize() * loopCount
     }
 
 
@@ -53,9 +52,8 @@ class CycleIndicatorRecyclerAdapter(
 
         @SuppressLint("SetTextI18n")
         fun onBind() {
-            val realPosition = getRealPosition(adapterPosition)
-            tvTitle.text = titles[realPosition]
-            if(tvTitle.isSelected){
+            tvTitle.text = cycleFragmentStatePagerAdapter.getPageTitle(adapterPosition)
+            if (tvTitle.isSelected) {
                 tvTitle.setTextColor(mTabSelectedTextColor)
             } else {
                 tvTitle.setTextColor(mTabNormalTextColor)
@@ -79,7 +77,7 @@ class CycleIndicatorRecyclerAdapter(
         mTabNormalTextColor = tabNormalTextColor
     }
 
-    fun getRealPosition(position: Int) = position.rem(titles.size)
+    fun getRealPosition(position: Int) = position.rem(cycleFragmentStatePagerAdapter.getRealItemSize())
 
     interface OnIndicatorItemListener {
         fun onItemPositionClicked(positionIndex: Int, realPosition: Int)

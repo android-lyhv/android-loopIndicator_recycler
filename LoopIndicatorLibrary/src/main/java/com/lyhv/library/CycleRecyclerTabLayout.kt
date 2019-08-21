@@ -213,9 +213,9 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
         mPositionThreshold = positionThreshold
     }
 
-    fun setUpWithViewPager(context: Context, titlesItems: List<String>, viewPager: ViewPager) {
+    fun setUpWithViewPager(context: Context, viewPager: ViewPager, cycleFragmentStatePagerAdapter: CycleFragmentStatePagerAdapter) {
         mViewPager = viewPager
-        mCycleIndicatorRecyclerAdapter = CycleIndicatorRecyclerAdapter(context, titlesItems)
+        mCycleIndicatorRecyclerAdapter = CycleIndicatorRecyclerAdapter(context, cycleFragmentStatePagerAdapter)
         setUpWithAdapter(mCycleIndicatorRecyclerAdapter.apply {
             onItemListener = object : CycleIndicatorRecyclerAdapter.OnIndicatorItemListener {
                 override fun onItemPositionClicked(positionIndex: Int, realPosition: Int) {
