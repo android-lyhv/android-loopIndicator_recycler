@@ -17,4 +17,7 @@ class MyPagerAdapter(fm: FragmentManager) : CycleFragmentStatePagerAdapter(fm) {
         return ItemFragment.newInstance(position)
     }
 
+    override fun getPageTitle(position: Int): CharSequence? {
+        return "${position.rem(getRealItemSize())}"
+    }
 }

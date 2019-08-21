@@ -21,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         for (index in 0 until mMyPagerAdapter.getRealItemSize()) {
             titleItems.add("Index $index")
         }
-        myRecyclerTabLayout.setUpWithViewPager(this, titleItems, viewPager)
+        myRecyclerTabLayout.setUpWithViewPager(this, viewPager, mMyPagerAdapter)
         viewPager.currentItem =
             myRecyclerTabLayout.getItemCenterPosition(Random.nextInt(mMyPagerAdapter.getRealItemSize()))
     }
