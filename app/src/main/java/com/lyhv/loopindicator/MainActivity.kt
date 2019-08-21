@@ -10,17 +10,13 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        mMyPagerAdapter = MyPagerAdapter(supportFragmentManager)
+        viewPager.adapter = mMyPagerAdapter
         onInit()
     }
 
     private fun onInit() {
-        mMyPagerAdapter = MyPagerAdapter(supportFragmentManager)
-        viewPager.adapter = mMyPagerAdapter
         // recyclerTabLayout.setUpWithViewPager(viewPager)
-        val titleItems: ArrayList<String> = ArrayList()
-        for (index in 0 until mMyPagerAdapter.getRealItemSize()) {
-            titleItems.add("Index $index")
-        }
         myRecyclerTabLayout.setUpWithViewPager(this, viewPager, mMyPagerAdapter)
         viewPager.currentItem =
             myRecyclerTabLayout.getItemCenterPosition(Random.nextInt(mMyPagerAdapter.getRealItemSize()))

@@ -27,7 +27,7 @@ class CycleIndicatorRecyclerAdapter(
     }
 
     override fun onBindViewHolder(holderIndicator: IndicatorViewHolder, position: Int) {
-        holderIndicator.tvTitle.isSelected = currentIndicatorPosition == position
+        holderIndicator.tvTitle.isSelected = getRealPosition(currentIndicatorPosition) == getRealPosition(position)
         holderIndicator.onBind()
     }
 
