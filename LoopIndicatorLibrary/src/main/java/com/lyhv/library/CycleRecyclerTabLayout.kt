@@ -57,7 +57,7 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
     protected var mIndicatorPadding: Int = 0
 
     protected var mLinearLayoutManager: LinearLayoutManager
-    protected var mRecyclerOnScrollListener: RecyclerOnScrollListener? = null
+//    protected var mRecyclerOnScrollListener: RecyclerOnScrollListener? = null
     protected var mViewPager: ViewPager? = null
     protected var mAdapter: Adapter<*>? = null
 
@@ -170,14 +170,14 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
         typedArray.recycle()
     }
 
-
-    override fun onDetachedFromWindow() {
-        if (mRecyclerOnScrollListener != null) {
-            removeOnScrollListener(mRecyclerOnScrollListener!!)
-            mRecyclerOnScrollListener = null
-        }
-        super.onDetachedFromWindow()
-    }
+//
+//    override fun onDetachedFromWindow() {
+//        if (mRecyclerOnScrollListener != null) {
+//            removeOnScrollListener(mRecyclerOnScrollListener!!)
+//            mRecyclerOnScrollListener = null
+//        }
+//        super.onDetachedFromWindow()
+//    }
 
 
     private fun setIndicatorColor(color: Int) {
@@ -388,56 +388,56 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
         canvas.drawRoundRect(rect, mIndicatorRadius.toFloat(), mIndicatorRadius.toFloat(), mIndicatorPaint)
     }
 
-    protected open class RecyclerOnScrollListener(
-        private var mRecyclerTabLayout: CycleRecyclerTabLayout,
-        private var mLinearLayoutManager: LinearLayoutManager
-    ) : RecyclerView.OnScrollListener() {
-
-        var mDx: Int = 0
-
-        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-            mDx += dx
-        }
-
-        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
-            when (newState) {
-                SCROLL_STATE_IDLE -> {
-                    if (mDx > 0) {
-                        selectCenterTabForRightScroll()
-                    } else {
-                        selectCenterTabForLeftScroll()
-                    }
-                    mDx = 0
-                }
-            }
-        }
-
-        private fun selectCenterTabForRightScroll() {
-            val first = mLinearLayoutManager.findFirstVisibleItemPosition()
-            val last = mLinearLayoutManager.findLastVisibleItemPosition()
-            val center = mRecyclerTabLayout.width / 2
-            for (position in first..last) {
-                val view = mLinearLayoutManager.findViewByPosition(position)
-                if (view!!.left + view.width >= center) {
-                    mRecyclerTabLayout.setCurrentItem(position, false)
-                    break
-                }
-            }
-        }
-
-        private fun selectCenterTabForLeftScroll() {
-            val first = mLinearLayoutManager.findFirstVisibleItemPosition()
-            val last = mLinearLayoutManager.findLastVisibleItemPosition()
-            val center = mRecyclerTabLayout.width / 2
-            for (position in last downTo first) {
-                val view = mLinearLayoutManager.findViewByPosition(position)
-                if (view?.left ?: 0 <= center) {
-                    mRecyclerTabLayout.setCurrentItem(position, false)
-                    break
-                }
-            }
-        }
-    }
+//    protected open class RecyclerOnScrollListener(
+//        private var mRecyclerTabLayout: CycleRecyclerTabLayout,
+//        private var mLinearLayoutManager: LinearLayoutManager
+//    ) : RecyclerView.OnScrollListener() {
+//
+//        var mDx: Int = 0
+//
+//        override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+//            mDx += dx
+//        }
+//
+//        override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+//            when (newState) {
+//                SCROLL_STATE_IDLE -> {
+//                    if (mDx > 0) {
+//                        selectCenterTabForRightScroll()
+//                    } else {
+//                        selectCenterTabForLeftScroll()
+//                    }
+//                    mDx = 0
+//                }
+//            }
+//        }
+//
+//        private fun selectCenterTabForRightScroll() {
+//            val first = mLinearLayoutManager.findFirstVisibleItemPosition()
+//            val last = mLinearLayoutManager.findLastVisibleItemPosition()
+//            val center = mRecyclerTabLayout.width / 2
+//            for (position in first..last) {
+//                val view = mLinearLayoutManager.findViewByPosition(position)
+//                if (view!!.left + view.width >= center) {
+//                    mRecyclerTabLayout.setCurrentItem(position, false)
+//                    break
+//                }
+//            }
+//        }
+//
+//        private fun selectCenterTabForLeftScroll() {
+//            val first = mLinearLayoutManager.findFirstVisibleItemPosition()
+//            val last = mLinearLayoutManager.findLastVisibleItemPosition()
+//            val center = mRecyclerTabLayout.width / 2
+//            for (position in last downTo first) {
+//                val view = mLinearLayoutManager.findViewByPosition(position)
+//                if (view?.left ?: 0 <= center) {
+//                    mRecyclerTabLayout.setCurrentItem(position, false)
+//                    break
+//                }
+//            }
+//        }
+//    }
 
     private var viewPagerListener: ViewPagerOnPageChangeListener? = null
 
