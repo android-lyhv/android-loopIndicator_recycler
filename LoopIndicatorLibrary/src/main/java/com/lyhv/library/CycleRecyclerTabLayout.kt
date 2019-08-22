@@ -30,6 +30,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import java.util.*
+import kotlin.math.abs
 
 open class CycleRecyclerTabLayout @JvmOverloads constructor(
     context: Context,
@@ -72,7 +73,6 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
     private var mOldScrollOffset: Int = 0
     private val isLayoutRtl: Boolean
         get() = ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL
-    private var mLoopCount = IndicatorConfig.LOOP_COUNT
     private lateinit var mCycleIndicatorRecyclerAdapter: CycleIndicatorRecyclerAdapter
 
     init {
@@ -191,11 +191,11 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
     }
 
     private fun setIndicatorPadding(indicatorPadding: Int) {
-        mIndicatorPadding = indicatorPadding;
+        mIndicatorPadding = indicatorPadding
     }
 
     private fun setIndicatorRadius(indicatorRadius: Int) {
-        mIndicatorRadius = indicatorRadius;
+        mIndicatorRadius = indicatorRadius
     }
 
     fun setAutoSelectionMode(autoSelect: Boolean) {
@@ -213,13 +213,21 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
         mPositionThreshold = positionThreshold
     }
 
-    fun setUpWithViewPager(context: Context, viewPager: ViewPager, cycleFragmentStatePagerAdapter: CycleFragmentStatePagerAdapter) {
+    fun setUpWithViewPager(
+        context: Context,
+        viewPager: ViewPager,
+        cycleFragmentStatePagerAdapter: CycleFragmentStatePagerAdapter
+    ) {
         mViewPager = viewPager
         mCycleIndicatorRecyclerAdapter = CycleIndicatorRecyclerAdapter(context, cycleFragmentStatePagerAdapter)
         setUpWithAdapter(mCycleIndicatorRecyclerAdapter.apply {
             onItemListener = object : CycleIndicatorRecyclerAdapter.OnIndicatorItemListener {
                 override fun onItemPositionClicked(positionIndex: Int, realPosition: Int) {
-                    viewPager.currentItem = positionIndex
+                    if (abs(positionIndex.minus(mIndicatorPosition)) <= IndicatorConfig.MAX_STEP_INDEX_ANIMATION) {
+                        setCurrentItem(positionIndex, true)
+                    } else {
+                        setCurrentItem(positionIndex, false)
+                    }
                 }
             }
             textTitleColor = mTabSelectedTextColor
@@ -262,12 +270,11 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
 
     private fun startAnimation(position: Int) {
         var distance = 1f
-
         val view = mLinearLayoutManager.findViewByPosition(position)
         if (view != null) {
             val currentX = view.x + view.measuredWidth / 2f
             val centerX = measuredWidth / 2f
-            distance = Math.abs(centerX - currentX) / view.measuredWidth
+            distance = abs(centerX - currentX) / view.measuredWidth
         }
 
         val animator: ValueAnimator
