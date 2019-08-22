@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <Button
+        android:id="@+id/btnSwitch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="Switch Mode"
+        android:textAllCaps="false" />
+
+    <com.lyhv.library.CycleRecyclerTabLayout
+        android:id="@+id/myRecyclerTabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:rtl_tabBackground="@android:color/transparent"
+        app:rtl_tabIndicatorColor="@color/colorPrimary"
+        app:rtl_tabIndicatorCorner="15dp"
+        app:rtl_tabIndicatorHeight="30dp"
+        app:rtl_tabNormalTextColor="@color/colorPrimary"
+        app:rtl_tabSelectedTextColor="@android:color/white" />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="5dp"
+        android:background="@color/colorPrimaryDark" />
+
+    <androidx.viewpager.widget.ViewPager
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</LinearLayout>
