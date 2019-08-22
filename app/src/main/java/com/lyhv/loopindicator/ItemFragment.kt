@@ -18,10 +18,10 @@ class ItemFragment : Fragment() {
 
     companion object {
         const val INDEX_ARG = "INDEX_AGR"
-        fun newInstance(index: Int): ItemFragment {
+        fun newInstance(index: Int, title: String): ItemFragment {
             return ItemFragment().apply {
                 arguments = Bundle().apply {
-                    putInt(INDEX_ARG, index)
+                    putString(INDEX_ARG, title)
                 }
             }
         }
@@ -29,6 +29,6 @@ class ItemFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        tvTitle.text = arguments?.getInt(INDEX_ARG).toString()
+        tvTitle.text = arguments?.getString(INDEX_ARG)
     }
 }

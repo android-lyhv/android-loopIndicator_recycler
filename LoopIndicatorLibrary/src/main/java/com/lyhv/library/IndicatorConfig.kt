@@ -5,5 +5,6 @@ package com.lyhv.library
  * Copyright @ est-rouge. All rights reserved
  */
 object IndicatorConfig {
-    const val LOOP_COUNT = 10000
+    const val LOOP_COUNT = 10_000
+    const val MAX_STEP_INDEX_ANIMATION = 3
 }
