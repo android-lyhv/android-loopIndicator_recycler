@@ -8,7 +8,7 @@ import com.lyhv.library.CycleFragmentStatePagerAdapter
  * Created by lyhv on August 15, 2019
  * Copyright @ est-rouge. All rights reserved
  */
-class MyPagerAdapter(fm: FragmentManager, items: List<String>) : CycleFragmentStatePagerAdapter(fm) {
+class MyCyclePagerAdapter(fm: FragmentManager, items: List<String>) : CycleFragmentStatePagerAdapter(fm) {
     private val mItemList: ArrayList<String> = ArrayList()
 
     init {

@@ -10,8 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 
 class CycleIndicatorRecyclerAdapter(
     context: Context,
-    var cycleFragmentStatePagerAdapter: CycleFragmentStatePagerAdapter,
-    var loopCount: Int = IndicatorConfig.LOOP_COUNT
+    var cycleFragmentStatePagerAdapter: CycleFragmentStatePagerAdapter
 ) :
     CycleRecyclerTabLayout.Adapter<CycleIndicatorRecyclerAdapter.IndicatorViewHolder>(context) {
     var onItemListener: OnIndicatorItemListener? = null
@@ -33,7 +32,7 @@ class CycleIndicatorRecyclerAdapter(
 
 
     override fun getItemCount(): Int {
-        return cycleFragmentStatePagerAdapter.getRealItemSize() * loopCount
+        return cycleFragmentStatePagerAdapter.count
     }
 
 
