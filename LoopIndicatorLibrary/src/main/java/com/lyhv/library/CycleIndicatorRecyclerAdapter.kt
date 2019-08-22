@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewpager.widget.ViewPager
 
 class CycleIndicatorRecyclerAdapter(
     context: Context,
@@ -78,7 +77,10 @@ class CycleIndicatorRecyclerAdapter(
         mTabNormalTextColor = tabNormalTextColor
     }
 
-    fun getRealPosition(position: Int) = position.rem(cycleFragmentStatePagerAdapter.getRealItemSize())
+    fun getRealPosition(position: Int): Int {
+        val realSize = cycleFragmentStatePagerAdapter.getRealItemSize()
+        return if (realSize <= 0) 0 else position.rem(realSize)
+    }
 
     interface OnIndicatorItemListener {
         fun onItemPositionClicked(positionIndex: Int, realPosition: Int)

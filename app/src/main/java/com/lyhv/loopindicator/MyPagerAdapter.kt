@@ -9,26 +9,26 @@ import com.lyhv.library.CycleFragmentStatePagerAdapter
  * Copyright @ est-rouge. All rights reserved
  */
 class MyPagerAdapter(fm: FragmentManager, items: List<String>) : CycleFragmentStatePagerAdapter(fm) {
-    private val itemList: ArrayList<String> = ArrayList()
+    private val mItemList: ArrayList<String> = ArrayList()
 
     init {
-        itemList.addAll(items)
+        mItemList.addAll(items)
     }
 
     fun setItems(items: List<String>) {
-        this.itemList.clear()
-        this.itemList.addAll(items)
+        this.mItemList.clear()
+        this.mItemList.addAll(items)
     }
 
     override fun getRealItemSize(): Int {
-        return itemList.size
+        return mItemList.size
     }
 
-    override fun getRealItem(position: Int): Fragment {
-        return ItemFragment.newInstance(position, itemList[position])
+    override fun getRealItem(realPosition: Int): Fragment {
+        return ItemFragment.newInstance(realPosition, mItemList[realPosition])
     }
 
     override fun getPageTitle(position: Int): CharSequence? {
-        return itemList.get(position.rem(getRealItemSize()))
+        return mItemList[getRealPosition(position)]
     }
 }
