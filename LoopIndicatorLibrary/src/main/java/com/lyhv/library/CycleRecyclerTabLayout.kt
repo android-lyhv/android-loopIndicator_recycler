@@ -22,6 +22,7 @@ package com.lyhv.library
 import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
 import androidx.core.view.ViewCompat
@@ -30,37 +31,145 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager.widget.ViewPager
 import kotlin.math.abs
 
-class CycleRecyclerTabLayout @JvmOverloads constructor(
-        context: Context,
-        attrs: AttributeSet? = null,
-        defStyle: Int = 0) : RecyclerView(context, attrs, defStyle) {
-    private val mRecyclerStyle: RecyclerStyle = RecyclerStyle()
-    private var mLinearLayoutManager: LinearLayoutManager
-    private var mRecyclerOnScrollListener: RecyclerOnScrollListener? = null
-    private var mViewPager: ViewPager? = null
-    private var mBaseAdapter: BaseAdapter<*>? = null
-    private var mIndicatorPosition: Int = 0
-    private var mIndicatorGap: Int = 0
-    private var mIndicatorScroll: Int = 0
-    private var mOldPositionOffset: Float = 0.toFloat()
-    private var mPositionThreshold: Float = 0.toFloat()
-    private var mRequestScrollToTab: Boolean = false
+open class CycleRecyclerTabLayout @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet? = null,
+    defStyle: Int = 0
+) :
+    RecyclerView(context, attrs, defStyle) {
+
+    protected var mIndicatorPaint: Paint
+    protected var mTabBackgroundResId: Int = 0
+    protected var mTabOnScreenLimit: Int = 0
+    protected var mTabMinWidth: Int = 0
+    protected var mTabMaxWidth: Int = 0
+    protected var mTabTextAppearance: Int = 0
+    protected var mTabSelectedTextColor: Int = 0
+    protected var mTabNormalTextColor: Int = 0
+    protected var mTabSelectedTextColorSet: Boolean = false
+    protected var mTabNormalTextColorSet: Boolean = false
+    protected var mTabPaddingStart: Int = 0
+    protected var mTabPaddingTop: Int = 0
+    protected var mTabPaddingEnd: Int = 0
+    protected var mTabPaddingBottom: Int = 0
+    protected var mIndicatorHeight: Int = 0
+    protected var mIndicatorRadius: Int = 0
+    protected var mIndicatorPadding: Int = 0
+
+    protected var mLinearLayoutManager: LinearLayoutManager
+    protected var mRecyclerOnScrollListener: RecyclerOnScrollListener? = null
+    protected var mViewPager: ViewPager? = null
+    protected var mAdapter: Adapter<*>? = null
+
+    protected var mIndicatorPosition: Int = 0
+    protected var mIndicatorGap: Int = 0
+    protected var mIndicatorScroll: Int = 0
+    protected var mOldPositionOffset: Float = 0.toFloat()
+    protected var mPositionThreshold: Float = 0.toFloat()
+    protected var mRequestScrollToTab: Boolean = false
+    protected var mScrollEnabled: Boolean = false
     private var mOldPosition: Int = 0
     private var mOldScrollOffset: Int = 0
     private val isLayoutRtl: Boolean
         get() = ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL
-    private lateinit var mCycleIndicatorRecyclerAdapter: CycleIndicatorRecyclerBaseAdapter
+    private lateinit var mCycleIndicatorRecyclerAdapter: CycleIndicatorRecyclerAdapter
 
     init {
-        mRecyclerStyle.applyStyle(context, attrs!!, defStyle)
-        mLinearLayoutManager = LinearLayoutManager(context).apply {
-            orientation = LinearLayoutManager.HORIZONTAL
+        setWillNotDraw(false)
+        mIndicatorPaint = Paint()
+        getAttributes(context, attrs!!, defStyle)
+        mLinearLayoutManager = object : LinearLayoutManager(getContext()) {
+            override fun canScrollHorizontally(): Boolean {
+                return mScrollEnabled
+            }
         }
+        mLinearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
         layoutManager = mLinearLayoutManager
-        addItemDecoration(SpacingItemDecoration(resources.getDimensionPixelSize(R.dimen.padding_size), 0, SpacingItemDecoration.HORIZONTAL))
         itemAnimator = null
         mPositionThreshold = DEFAULT_POSITION_THRESHOLD
     }
+
+    private fun getAttributes(context: Context, attrs: AttributeSet, defStyle: Int) {
+        val typedArray = context.obtainStyledAttributes(
+            attrs, R.styleable.rtl_RecyclerTabLayout,
+            defStyle, R.style.rtl_RecyclerTabLayout
+        )
+        setIndicatorColor(
+            typedArray.getColor(
+                R.styleable
+                    .rtl_RecyclerTabLayout_rtl_tabIndicatorColor, 0
+            )
+        )
+        setIndicatorHeight(
+            typedArray.getDimensionPixelSize(
+                R.styleable
+                    .rtl_RecyclerTabLayout_rtl_tabIndicatorHeight, 0
+            )
+        )
+
+        setIndicatorPadding(
+            typedArray.getDimensionPixelSize(
+                R.styleable
+                    .rtl_RecyclerTabLayout_rtl_tabIndicatorPadding, 0
+            )
+        )
+        setIndicatorRadius(
+            typedArray.getDimensionPixelSize(
+                R.styleable
+                    .rtl_RecyclerTabLayout_rtl_tabIndicatorCorner, 0
+            )
+        )
+        mTabTextAppearance = typedArray.getResourceId(
+            R.styleable.rtl_RecyclerTabLayout_rtl_tabTextAppearance,
+            R.style.rtl_RecyclerTabLayout_Tab
+        )
+
+        mTabPaddingBottom = typedArray
+            .getDimensionPixelSize(R.styleable.rtl_RecyclerTabLayout_rtl_tabPadding, 0)
+        mTabPaddingEnd = mTabPaddingBottom
+        mTabPaddingTop = mTabPaddingEnd
+        mTabPaddingStart = mTabPaddingTop
+        mTabPaddingStart = typedArray.getDimensionPixelSize(
+            R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingStart, mTabPaddingStart
+        )
+        mTabPaddingTop = typedArray.getDimensionPixelSize(
+            R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingTop, mTabPaddingTop
+        )
+        mTabPaddingEnd = typedArray.getDimensionPixelSize(
+            R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingEnd, mTabPaddingEnd
+        )
+        mTabPaddingBottom = typedArray.getDimensionPixelSize(
+            R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingBottom, mTabPaddingBottom
+        )
+
+        if (typedArray.hasValue(R.styleable.rtl_RecyclerTabLayout_rtl_tabSelectedTextColor)) {
+            mTabSelectedTextColor = typedArray
+                .getColor(R.styleable.rtl_RecyclerTabLayout_rtl_tabSelectedTextColor, 0)
+            mTabSelectedTextColorSet = true
+        }
+
+        if (typedArray.hasValue(R.styleable.rtl_RecyclerTabLayout_rtl_tabNormalTextColor)) {
+            mTabNormalTextColor = typedArray
+                .getColor(R.styleable.rtl_RecyclerTabLayout_rtl_tabNormalTextColor, 0)
+            mTabNormalTextColorSet = true
+        }
+        mTabOnScreenLimit = typedArray.getInteger(
+            R.styleable.rtl_RecyclerTabLayout_rtl_tabOnScreenLimit, 0
+        )
+        if (mTabOnScreenLimit == 0) {
+            mTabMinWidth = typedArray.getDimensionPixelSize(
+                R.styleable.rtl_RecyclerTabLayout_rtl_tabMinWidth, 0
+            )
+            mTabMaxWidth = typedArray.getDimensionPixelSize(
+                R.styleable.rtl_RecyclerTabLayout_rtl_tabMaxWidth, 0
+            )
+        }
+
+        mTabBackgroundResId = typedArray.getResourceId(R.styleable.rtl_RecyclerTabLayout_rtl_tabBackground, 0)
+        mScrollEnabled = typedArray.getBoolean(R.styleable.rtl_RecyclerTabLayout_rtl_scrollEnabled, true)
+        typedArray.recycle()
+    }
+
 
     override fun onDetachedFromWindow() {
         if (mRecyclerOnScrollListener != null) {
@@ -71,11 +180,31 @@ class CycleRecyclerTabLayout @JvmOverloads constructor(
     }
 
 
-    fun setUpWithViewPager(context: Context, viewPager: ViewPager, cycleFragmentStatePagerAdapter: CycleFragmentStatePagerAdapter) {
+    private fun setIndicatorColor(color: Int) {
+        mIndicatorPaint.color = color
+    }
+
+    private fun setIndicatorHeight(indicatorHeight: Int) {
+        mIndicatorHeight = indicatorHeight
+    }
+
+    private fun setIndicatorPadding(indicatorPadding: Int) {
+        mIndicatorPadding = indicatorPadding
+    }
+
+    private fun setIndicatorRadius(indicatorRadius: Int) {
+        mIndicatorRadius = indicatorRadius
+    }
+
+    fun setUpWithViewPager(
+        context: Context,
+        viewPager: ViewPager,
+        cycleFragmentStatePagerAdapter: CycleFragmentStatePagerAdapter
+    ) {
         mViewPager = viewPager
-        mCycleIndicatorRecyclerAdapter = CycleIndicatorRecyclerBaseAdapter(context, cycleFragmentStatePagerAdapter)
+        mCycleIndicatorRecyclerAdapter = CycleIndicatorRecyclerAdapter(context, cycleFragmentStatePagerAdapter)
         setUpWithAdapter(mCycleIndicatorRecyclerAdapter.apply {
-            onItemListener = object : CycleIndicatorRecyclerBaseAdapter.OnIndicatorItemListener {
+            onItemListener = object : CycleIndicatorRecyclerAdapter.OnIndicatorItemListener {
                 override fun onItemPositionClicked(positionIndex: Int, realPosition: Int) {
                     if (abs(positionIndex.minus(mIndicatorPosition)) <= IndicatorConfig.MAX_STEP_INDEX_ANIMATION) {
                         setCurrentItem(positionIndex, true)
@@ -84,25 +213,27 @@ class CycleRecyclerTabLayout @JvmOverloads constructor(
                     }
                 }
             }
-            textTitleColor = this@CycleRecyclerTabLayout.mRecyclerStyle.mTabSelectedTextColor
-            setTabNormalTextColor(this@CycleRecyclerTabLayout.mRecyclerStyle.mTabNormalTextColorSet, this@CycleRecyclerTabLayout.mRecyclerStyle.mTabNormalTextColor)
-            setTabSelectedTextColor(this@CycleRecyclerTabLayout.mRecyclerStyle.mTabSelectedTextColorSet, this@CycleRecyclerTabLayout.mRecyclerStyle.mTabSelectedTextColor)
+            textTitleColor = mTabSelectedTextColor
+            setTabNormalTextColor(mTabNormalTextColorSet, mTabNormalTextColor)
+            setTabSelectedTextColor(mTabSelectedTextColorSet, mTabSelectedTextColor)
         })
     }
 
-    private fun setUpWithAdapter(baseAdapter: BaseAdapter<*>) {
-        mBaseAdapter = baseAdapter
+    fun getItemCenterPosition(realPosition: Int): Int {
+        val targetCenterPosition =
+            mCycleIndicatorRecyclerAdapter.getRealPosition(mCycleIndicatorRecyclerAdapter.itemCount / 2)
+        val range = realPosition - targetCenterPosition
+        return mCycleIndicatorRecyclerAdapter.itemCount / 2 + range
+    }
+
+    private fun setUpWithAdapter(adapter: Adapter<*>) {
+        mAdapter = adapter
         if (mViewPager?.adapter == null) {
             throw IllegalArgumentException("ViewPager does not have a PagerAdapter set")
         }
-        mViewPager?.addOnPageChangeListener(ViewPagerOnPageChangeListener(this))
-        adapter = baseAdapter
-    }
-
-    fun getItemCenterPosition(realPosition: Int): Int {
-        val targetCenterPosition = mCycleIndicatorRecyclerAdapter.getRealPosition(mCycleIndicatorRecyclerAdapter.itemCount / 2)
-        val range = realPosition - targetCenterPosition
-        return mCycleIndicatorRecyclerAdapter.itemCount / 2 + range
+        viewPagerListener = ViewPagerOnPageChangeListener(this)
+        mViewPager?.addOnPageChangeListener(viewPagerListener!!)
+        setAdapter(adapter)
     }
 
     fun setCurrentItem(position: Int, smoothScroll: Boolean) {
@@ -140,8 +271,8 @@ class CycleRecyclerTabLayout @JvmOverloads constructor(
 
     fun scrollToTab(position: Int) {
         scrollToTab(position, 0f, false)
-        mBaseAdapter?.currentIndicatorPosition = position
-        mBaseAdapter?.notifyDataSetChanged()
+        mAdapter?.currentIndicatorPosition = position
+        mAdapter?.notifyDataSetChanged()
     }
 
     fun scrollToTab(position: Int, positionOffset: Float, fitIndicator: Boolean) {
@@ -152,7 +283,7 @@ class CycleRecyclerTabLayout @JvmOverloads constructor(
         if (selectedView != null) {
             val width = measuredWidth
             val sLeft =
-                    if (position == 0) 0F else width / 2f - selectedView.measuredWidth / 2f // left edge of selected tab
+                if (position == 0) 0F else width / 2f - selectedView.measuredWidth / 2f // left edge of selected tab
             val sRight = sLeft + selectedView.measuredWidth // right edge of selected tab
 
             if (nextView != null) {
@@ -183,8 +314,8 @@ class CycleRecyclerTabLayout @JvmOverloads constructor(
             }
 
         } else {
-            if (measuredWidth > 0 && mRecyclerStyle.mTabMaxWidth > 0 && mRecyclerStyle.mTabMinWidth == mRecyclerStyle.mTabMaxWidth) { //fixed size
-                val width = mRecyclerStyle.mTabMinWidth
+            if (measuredWidth > 0 && mTabMaxWidth > 0 && mTabMinWidth == mTabMaxWidth) { //fixed size
+                val width = mTabMinWidth
                 val offset = (positionOffset * -width).toInt()
                 val leftOffset = ((measuredWidth - width) / 2f).toInt()
                 scrollOffset = offset + leftOffset
@@ -204,13 +335,13 @@ class CycleRecyclerTabLayout @JvmOverloads constructor(
         mOldPosition = position
         mOldScrollOffset = scrollOffset
         mOldPositionOffset = positionOffset
-        if (mRecyclerStyle.mIndicatorHeight > 0) {
+        if (mIndicatorHeight > 0) {
             postInvalidate()
         }
     }
 
     private fun updateCurrentIndicatorPosition(position: Int, dx: Float, positionOffset: Float) {
-        if (mBaseAdapter == null) {
+        if (mAdapter == null) {
             return
         }
         var indicatorPosition = -1
@@ -220,9 +351,9 @@ class CycleRecyclerTabLayout @JvmOverloads constructor(
         } else if (dx < 0 && positionOffset <= 1 - mPositionThreshold + POSITION_THRESHOLD_ALLOWABLE) {
             indicatorPosition = position
         }
-        if (indicatorPosition >= 0 && indicatorPosition != mBaseAdapter!!.currentIndicatorPosition) {
-            mBaseAdapter?.currentIndicatorPosition = indicatorPosition
-            mBaseAdapter?.notifyDataSetChanged()
+        if (indicatorPosition >= 0 && indicatorPosition != mAdapter!!.currentIndicatorPosition) {
+            mAdapter?.currentIndicatorPosition = indicatorPosition
+            mAdapter?.notifyDataSetChanged()
         }
     }
 
@@ -230,8 +361,8 @@ class CycleRecyclerTabLayout @JvmOverloads constructor(
         onDrawIndicator(canvas, mIndicatorPosition)
     }
 
-    private fun onDrawIndicator(canvas: Canvas, index: Int) {
-        val view = mLinearLayoutManager.findViewByPosition(index)
+    private fun onDrawIndicator(canvas: Canvas, position: Int) {
+        val view = mLinearLayoutManager.findViewByPosition(position)
         if (view == null) {
             if (mRequestScrollToTab) {
                 mRequestScrollToTab = false
@@ -250,16 +381,16 @@ class CycleRecyclerTabLayout @JvmOverloads constructor(
             right = view.right + mIndicatorScroll + mIndicatorGap
         }
 
-        val top = (height - mRecyclerStyle.mIndicatorHeight) / 2
-        val bottom = top + mRecyclerStyle.mIndicatorHeight
+        val top = (height - mIndicatorHeight) / 2
+        val bottom = top + mIndicatorHeight
 
         val rect = RectF(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat())
-        canvas.drawRoundRect(rect, mRecyclerStyle.mIndicatorRadius.toFloat(), mRecyclerStyle.mIndicatorRadius.toFloat(), mRecyclerStyle.mIndicatorPaint)
+        canvas.drawRoundRect(rect, mIndicatorRadius.toFloat(), mIndicatorRadius.toFloat(), mIndicatorPaint)
     }
 
     protected open class RecyclerOnScrollListener(
-            private var mRecyclerTabLayout: CycleRecyclerTabLayout,
-            private var mLinearLayoutManager: LinearLayoutManager
+        private var mRecyclerTabLayout: CycleRecyclerTabLayout,
+        private var mLinearLayoutManager: LinearLayoutManager
     ) : RecyclerView.OnScrollListener() {
 
         var mDx: Int = 0
@@ -308,11 +439,10 @@ class CycleRecyclerTabLayout @JvmOverloads constructor(
         }
     }
 
+    private var viewPagerListener: ViewPagerOnPageChangeListener? = null
 
-    /**
-     *  Listener viewpager page change
-     */
-    open class ViewPagerOnPageChangeListener(private val mRecyclerTabLayout: CycleRecyclerTabLayout) : ViewPager.OnPageChangeListener {
+    open class ViewPagerOnPageChangeListener(private val mRecyclerTabLayout: CycleRecyclerTabLayout) :
+        ViewPager.OnPageChangeListener {
         private var mScrollState: Int = 0
 
         override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
@@ -332,9 +462,10 @@ class CycleRecyclerTabLayout @JvmOverloads constructor(
         }
     }
 
-    abstract class BaseAdapter<T : ViewHolder>(var context: Context) : RecyclerView.Adapter<T>() {
+    abstract class Adapter<T : ViewHolder>(var context: Context) : RecyclerView.Adapter<T>() {
         var currentIndicatorPosition: Int = 0
     }
+
 
     companion object {
         protected const val DEFAULT_SCROLL_DURATION: Long = 200

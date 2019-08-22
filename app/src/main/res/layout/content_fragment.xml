@@ -25,7 +25,6 @@
         app:rtl_tabIndicatorHeight="30dp"
         app:rtl_tabNormalTextColor="@color/colorPrimary"
         app:rtl_tabSelectedTextColor="@android:color/white" />
-
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

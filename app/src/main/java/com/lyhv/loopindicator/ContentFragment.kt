@@ -27,11 +27,11 @@ class ContentFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         viewPager.adapter = mMyCyclePagerAdapter
         context?.let { myRecyclerTabLayout.setUpWithViewPager(it, viewPager, mMyCyclePagerAdapter) }
+        createTitleItems(false)
         btnSwitch.setOnClickListener {
             isShowDefault = !isShowDefault
             createTitleItems(isShowDefault)
         }
-        createTitleItems(false)
     }
 
 
@@ -40,8 +40,8 @@ class ContentFragment : Fragment() {
         if (isShowDefault) {
             titleItems.clear()
             titleItems.add(
-                    "Tab 0" +
-                            "1"
+                "Tab 0" +
+                        "1"
             )
             titleItems.add("Tab 1")
             titleItems.add("Tab 2")
