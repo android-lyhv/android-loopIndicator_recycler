@@ -18,18 +18,18 @@
     <com.lyhv.library.CycleRecyclerTabLayout
         android:id="@+id/myRecyclerTabLayout"
         android:layout_width="match_parent"
-        android:layout_height="36dp"
+        android:layout_height="wrap_content"
         app:rtl_tabBackground="@android:color/transparent"
         app:rtl_tabIndicatorColor="@color/colorPrimary"
-        app:rtl_tabIndicatorCorner="12dp"
-        app:rtl_tabIndicatorHeight="24dp"
-        app:rtl_tabIndicatorPadding="10dp"
+        app:rtl_tabIndicatorCorner="15dp"
+        app:rtl_tabIndicatorHeight="30dp"
         app:rtl_tabNormalTextColor="@color/colorPrimary"
         app:rtl_tabSelectedTextColor="@android:color/white" />
 
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
+        android:layout_marginTop="5dp"
         android:background="@color/colorPrimaryDark" />
 
     <androidx.viewpager.widget.ViewPager
