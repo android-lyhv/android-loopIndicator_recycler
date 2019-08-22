@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.ViewCompat
 import androidx.fragment.app.Fragment
 import kotlinx.android.synthetic.main.content_fragment.*
 
@@ -60,6 +59,6 @@ class ContentFragment : Fragment() {
         }
         mMyCyclePagerAdapter.setItems(titleItems)
         mMyCyclePagerAdapter.notifyDataSetChanged()
-       myRecyclerTabLayout.setCurrentItem(myRecyclerTabLayout.getItemCenterPosition(0), false)
+        myRecyclerTabLayout.setCurrentItem(myRecyclerTabLayout.getItemCenterPosition(0), false)
     }
 }

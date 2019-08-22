@@ -8,11 +8,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class CycleIndicatorRecyclerAdapter(
+class CycleIndicatorRecyclerBaseAdapter(
         context: Context,
         var cycleFragmentStatePagerAdapter: CycleFragmentStatePagerAdapter
 ) :
-        CycleRecyclerTabLayout.Adapter<CycleIndicatorRecyclerAdapter.IndicatorViewHolder>(context) {
+        CycleRecyclerTabLayout.BaseAdapter<CycleIndicatorRecyclerBaseAdapter.IndicatorViewHolder>(context) {
     var onItemListener: OnIndicatorItemListener? = null
     var textTitleColor: Int = 0
     protected var mTabSelectedTextColorSet: Boolean = false
