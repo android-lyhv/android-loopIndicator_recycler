@@ -25,7 +25,7 @@ class MyCyclePagerAdapter(fm: FragmentManager, items: List<String>) : CycleFragm
     }
 
     override fun getRealItem(realPosition: Int): Fragment {
-        return ItemFragment.newInstance(realPosition, mItemList[realPosition])
+        return ItemFragment.newInstance(mItemList[realPosition])
     }
 
     override fun getPageTitle(position: Int): CharSequence? {
