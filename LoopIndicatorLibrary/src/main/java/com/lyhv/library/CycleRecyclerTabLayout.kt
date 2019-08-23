@@ -1,7 +1,7 @@
 /**
  * Copyright (C) 2015 nshmura
  * Copyright (C) 2015 The Android Open Source Project
- *
+ * Copyright (C) 2019 lyhv
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 package com.lyhv.library
 
@@ -25,6 +26,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.RectF
 import android.util.AttributeSet
+import android.util.Log
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -37,7 +39,7 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
     defStyle: Int = 0
 ) :
     RecyclerView(context, attrs, defStyle) {
-
+    // Style config
     protected var mIndicatorPaint: Paint
     protected var mTabBackgroundResId: Int = 0
     protected var mTabOnScreenLimit: Int = 0
@@ -56,20 +58,20 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
     protected var mIndicatorRadius: Int = 0
     protected var mIndicatorPadding: Int = 0
 
-    protected var mLinearLayoutManager: LinearLayoutManager
-//    protected var mRecyclerOnScrollListener: RecyclerOnScrollListener? = null
-    protected var mViewPager: ViewPager? = null
-    protected var mAdapter: Adapter<*>? = null
-
+    private var mLinearLayoutManager: LinearLayoutManager
+    //protected var mRecyclerOnScrollListener: RecyclerOnScrollListener? = null
+    private var mViewPager: ViewPager? = null
+    private var mAdapter: Adapter<*>? = null
+    // Scroll Config
     protected var mIndicatorPosition: Int = 0
-    protected var mIndicatorGap: Int = 0
-    protected var mIndicatorScroll: Int = 0
-    protected var mOldPositionOffset: Float = 0.toFloat()
-    protected var mPositionThreshold: Float = 0.toFloat()
-    protected var mRequestScrollToTab: Boolean = false
-    protected var mScrollEnabled: Boolean = false
+    private var mIndicatorGap: Int = 0
+    private var mIndicatorScroll: Int = 0
+    private var mOldPositionOffset: Float = 0.toFloat()
+    private var mPositionThreshold: Float = DEFAULT_POSITION_THRESHOLD
+    private var mRequestScrollToTab: Boolean = false
     private var mOldPosition: Int = 0
     private var mOldScrollOffset: Int = 0
+    private var mScrollEnabled: Boolean = false
     private val isLayoutRtl: Boolean
         get() = ViewCompat.getLayoutDirection(this) == ViewCompat.LAYOUT_DIRECTION_RTL
     private lateinit var mCycleIndicatorRecyclerAdapter: CycleIndicatorRecyclerAdapter
@@ -86,7 +88,17 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
         mLinearLayoutManager.orientation = LinearLayoutManager.HORIZONTAL
         layoutManager = mLinearLayoutManager
         itemAnimator = null
+    }
+
+    private fun resetScrollConfig() {
+        mIndicatorPosition = 0
+        mIndicatorGap = 0
+        mIndicatorScroll = 0
+        mOldPositionOffset = 0F
         mPositionThreshold = DEFAULT_POSITION_THRESHOLD
+        mRequestScrollToTab = false
+        mOldPosition = 0
+        mOldScrollOffset = 0
     }
 
     private fun getAttributes(context: Context, attrs: AttributeSet, defStyle: Int) {
@@ -165,8 +177,10 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
             )
         }
 
-        mTabBackgroundResId = typedArray.getResourceId(R.styleable.rtl_RecyclerTabLayout_rtl_tabBackground, 0)
-        mScrollEnabled = typedArray.getBoolean(R.styleable.rtl_RecyclerTabLayout_rtl_scrollEnabled, true)
+        mTabBackgroundResId =
+            typedArray.getResourceId(R.styleable.rtl_RecyclerTabLayout_rtl_tabBackground, 0)
+        mScrollEnabled =
+            typedArray.getBoolean(R.styleable.rtl_RecyclerTabLayout_rtl_scrollEnabled, true)
         typedArray.recycle()
     }
 
@@ -202,7 +216,8 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
         cycleFragmentStatePagerAdapter: CycleFragmentStatePagerAdapter
     ) {
         mViewPager = viewPager
-        mCycleIndicatorRecyclerAdapter = CycleIndicatorRecyclerAdapter(context, cycleFragmentStatePagerAdapter)
+        mCycleIndicatorRecyclerAdapter =
+            CycleIndicatorRecyclerAdapter(context, cycleFragmentStatePagerAdapter)
         setUpWithAdapter(mCycleIndicatorRecyclerAdapter.apply {
             onItemListener = object : CycleIndicatorRecyclerAdapter.OnIndicatorItemListener {
                 override fun onItemPositionClicked(positionIndex: Int, realPosition: Int) {
@@ -219,7 +234,7 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
         })
     }
 
-    fun getItemCenterPosition(realPosition: Int): Int {
+    private fun getItemCenterPosition(realPosition: Int): Int {
         val targetCenterPosition =
             mCycleIndicatorRecyclerAdapter.getRealPosition(mCycleIndicatorRecyclerAdapter.itemCount / 2)
         val range = realPosition - targetCenterPosition
@@ -228,9 +243,7 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
 
     private fun setUpWithAdapter(adapter: Adapter<*>) {
         mAdapter = adapter
-        if (mViewPager?.adapter == null) {
-            throw IllegalArgumentException("ViewPager does not have a PagerAdapter set")
-        }
+        requireNotNull(mViewPager?.adapter) { "ViewPager does not have a PagerAdapter set" }
         viewPagerListener = ViewPagerOnPageChangeListener(this)
         mViewPager?.addOnPageChangeListener(viewPagerListener!!)
         setAdapter(adapter)
@@ -265,7 +278,13 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
             ValueAnimator.ofFloat(-distance, 0F)
         }
         animator.duration = DEFAULT_SCROLL_DURATION
-        animator.addUpdateListener { animation -> scrollToTab(position, animation.animatedValue as Float, true) }
+        animator.addUpdateListener { animation ->
+            scrollToTab(
+                position,
+                animation.animatedValue as Float,
+                true
+            )
+        }
         animator.start()
     }
 
@@ -281,6 +300,7 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
         val nextView = mLinearLayoutManager.findViewByPosition(position + 1)
 
         if (selectedView != null) {
+
             val width = measuredWidth
             val sLeft =
                 if (position == 0) 0F else width / 2f - selectedView.measuredWidth / 2f // left edge of selected tab
@@ -288,17 +308,21 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
 
             if (nextView != null) {
                 val nLeft = width / 2f - nextView.measuredWidth / 2f // left edge of next tab
-                val distance = sRight - nLeft // total distance that is needed to distance to next tab
+                val distance =
+                    sRight - nLeft // total distance that is needed to distance to next tab
                 val dx = distance * positionOffset
                 scrollOffset = (sLeft - dx).toInt()
 
                 if (position == 0) {
-                    val indicatorGap = ((nextView.measuredWidth - selectedView.measuredWidth) / 2).toFloat()
+                    val indicatorGap =
+                        ((nextView.measuredWidth - selectedView.measuredWidth) / 2).toFloat()
                     mIndicatorGap = (indicatorGap * positionOffset).toInt()
-                    mIndicatorScroll = ((selectedView.measuredWidth + indicatorGap) * positionOffset).toInt()
+                    mIndicatorScroll =
+                        ((selectedView.measuredWidth + indicatorGap) * positionOffset).toInt()
 
                 } else {
-                    val indicatorGap = ((nextView.measuredWidth - selectedView.measuredWidth) / 2).toFloat()
+                    val indicatorGap =
+                        ((nextView.measuredWidth - selectedView.measuredWidth) / 2).toFloat()
                     mIndicatorGap = (indicatorGap * positionOffset).toInt()
                     mIndicatorScroll = dx.toInt()
                 }
@@ -323,7 +347,11 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
             mRequestScrollToTab = true
         }
 
-        updateCurrentIndicatorPosition(position, positionOffset - mOldPositionOffset, positionOffset)
+        updateCurrentIndicatorPosition(
+            position,
+            positionOffset - mOldPositionOffset,
+            positionOffset
+        )
         mIndicatorPosition = position
 
         stopScroll()
@@ -385,10 +413,15 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
         val bottom = top + mIndicatorHeight
 
         val rect = RectF(left.toFloat(), top.toFloat(), right.toFloat(), bottom.toFloat())
-        canvas.drawRoundRect(rect, mIndicatorRadius.toFloat(), mIndicatorRadius.toFloat(), mIndicatorPaint)
+        canvas.drawRoundRect(
+            rect,
+            mIndicatorRadius.toFloat(),
+            mIndicatorRadius.toFloat(),
+            mIndicatorPaint
+        )
     }
 
-//    protected open class RecyclerOnScrollListener(
+    //    protected open class RecyclerOnScrollListener(
 //        private var mRecyclerTabLayout: CycleRecyclerTabLayout,
 //        private var mLinearLayoutManager: LinearLayoutManager
 //    ) : RecyclerView.OnScrollListener() {
@@ -416,10 +449,10 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
 //            val first = mLinearLayoutManager.findFirstVisibleItemPosition()
 //            val last = mLinearLayoutManager.findLastVisibleItemPosition()
 //            val center = mRecyclerTabLayout.width / 2
-//            for (position in first..last) {
-//                val view = mLinearLayoutManager.findViewByPosition(position)
+//            for (realPosition in first..last) {
+//                val view = mLinearLayoutManager.findViewByPosition(realPosition)
 //                if (view!!.left + view.width >= center) {
-//                    mRecyclerTabLayout.setCurrentItem(position, false)
+//                    mRecyclerTabLayout.setCurrentItem(realPosition, false)
 //                    break
 //                }
 //            }
@@ -429,15 +462,22 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
 //            val first = mLinearLayoutManager.findFirstVisibleItemPosition()
 //            val last = mLinearLayoutManager.findLastVisibleItemPosition()
 //            val center = mRecyclerTabLayout.width / 2
-//            for (position in last downTo first) {
-//                val view = mLinearLayoutManager.findViewByPosition(position)
+//            for (realPosition in last downTo first) {
+//                val view = mLinearLayoutManager.findViewByPosition(realPosition)
 //                if (view?.left ?: 0 <= center) {
-//                    mRecyclerTabLayout.setCurrentItem(position, false)
+//                    mRecyclerTabLayout.setCurrentItem(realPosition, false)
 //                    break
 //                }
 //            }
 //        }
 //    }
+
+    fun setCenterPositionItem(realPosition: Int) {
+        resetScrollConfig()
+        val centerPosition = getItemCenterPosition(realPosition)
+        setCurrentItem(centerPosition, false)
+        startAnimation(centerPosition)
+    }
 
     private var viewPagerListener: ViewPagerOnPageChangeListener? = null
 
@@ -445,7 +485,12 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
         ViewPager.OnPageChangeListener {
         private var mScrollState: Int = 0
 
-        override fun onPageScrolled(position: Int, positionOffset: Float, positionOffsetPixels: Int) {
+        override fun onPageScrolled(
+            position: Int,
+            positionOffset: Float,
+            positionOffsetPixels: Int
+        ) {
+            Log.d("aaa", "position $position - offset $positionOffset")
             mRecyclerTabLayout.scrollToTab(position, positionOffset, false)
         }
 

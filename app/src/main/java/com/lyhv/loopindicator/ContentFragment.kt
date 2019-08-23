@@ -17,7 +17,11 @@ class ContentFragment : Fragment() {
         mMyCyclePagerAdapter = MyCyclePagerAdapter(childFragmentManager, listOf())
     }
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.content_fragment, container, false)
     }
 
@@ -38,22 +42,19 @@ class ContentFragment : Fragment() {
         Toast.makeText(context, "Change Mode", Toast.LENGTH_SHORT).show()
         val titleItems: ArrayList<String> = ArrayList()
         if (isShowDefault) {
-            titleItems.add("Tab 0")
-            titleItems.add("Tab 1")
-            titleItems.add("Tab 2")
-            titleItems.add("Tab 3")
-            titleItems.add("Tab 4")
-            titleItems.add("Tab 5")
+            for (index in 0 until 1000) {
+                titleItems.add("Tab $index")
+            }
         } else {
             titleItems.add("マイアスリート")
             titleItems.add("ピックアップ")
-            for (index in 0 until 9) {
+            for (index in 0 until 1000) {
                 titleItems.add("Index $index")
             }
             titleItems.add("クリップ")
         }
         mMyCyclePagerAdapter.setItems(titleItems)
         mMyCyclePagerAdapter.notifyDataSetChanged()
-        myRecyclerTabLayout.setCurrentItem(myRecyclerTabLayout.getItemCenterPosition(0), true)
+        myRecyclerTabLayout.setCenterPositionItem(0)
     }
 }
