@@ -3,11 +3,5 @@
     android:id="@+id/tvTitle"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_indicator"
     android:gravity="center"
-    android:padding="5dp"
-    android:text="Hello World!"
-    android:textAlignment="center"
-    android:textColor="@android:color/holo_blue_light"
-    android:textSize="12dp"
-    android:textStyle="bold" />
+    android:text="Hello World!" />

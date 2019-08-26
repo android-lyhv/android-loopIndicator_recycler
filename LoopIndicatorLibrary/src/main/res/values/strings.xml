@@ -2,20 +2,13 @@
     <string name="app_name">LoopIndicatorLibrary</string>
     <!-- Base application theme. -->
     <style name="rtl_RecyclerTabLayout">
-        <item name="rtl_tabMinWidth">72dp</item>
-        <item name="rtl_tabMaxWidth">264dp</item>
+        <item name="rtl_tabMinWidth">@dimen/_72sdp</item>
+        <item name="rtl_tabMaxWidth">@dimen/_264sdp</item>
         <item name="rtl_tabIndicatorColor">?attr/colorAccent</item>
-        <item name="rtl_tabIndicatorHeight">2dp</item>
-        <item name="rtl_tabPaddingStart">12dp</item>
-        <item name="rtl_tabPaddingEnd">12dp</item>
-        <item name="rtl_tabBackground">?attr/selectableItemBackground</item>
-        <item name="rtl_tabTextAppearance">@style/rtl_RecyclerTabLayout.Tab</item>
-        <item name="rtl_tabSelectedTextColor">?android:textColorPrimary</item>
-    </style>
-
-    <style name="rtl_RecyclerTabLayout.Tab">
-        <item name="android:textSize">14sp</item>
-        <item name="android:textColor">?android:textColorSecondary</item>
-        <item name="textAllCaps">true</item>
+        <item name="rtl_tabIndicatorHeight">@dimen/_2sdp</item>
+        <item name="rtl_tabPaddingStart">@dimen/_12sdp</item>
+        <item name="rtl_tabPaddingEnd">@dimen/_12sdp</item>
+        <item name="rtl_tabTextAppearanceActive">@style/style_tabTextAppearanceActive</item>
+        <item name="rtl_tabTextAppearanceInActive">@style/style_tabTextAppearanceInActive</item>
     </style>
 </resources>

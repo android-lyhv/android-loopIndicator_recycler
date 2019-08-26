@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:animateLayoutChanges="true"
     android:orientation="vertical"
     tools:context=".MainActivity">
 
@@ -19,12 +20,13 @@
         android:id="@+id/myRecyclerTabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:rtl_tabBackground="@android:color/transparent"
-        app:rtl_tabIndicatorColor="@color/colorPrimary"
+        app:rtl_tabIndicatorColor="@android:color/holo_blue_light"
         app:rtl_tabIndicatorCorner="15dp"
-        app:rtl_tabIndicatorHeight="30dp"
-        app:rtl_tabNormalTextColor="@color/colorPrimary"
-        app:rtl_tabSelectedTextColor="@android:color/white" />
+        app:rtl_tabIndicatorHeight="25dp"
+        app:rtl_tabPadding="5dp"
+        app:rtl_tabTextAppearanceActive="@style/style_tabAppearanceActive"
+        app:rtl_tabTextAppearanceInActive="@style/style_tabAppearanceInActive" />
+
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"

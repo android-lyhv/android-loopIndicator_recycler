@@ -2,29 +2,36 @@ package com.lyhv.library
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.drawable.GradientDrawable
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.annotation.RequiresApi
+import androidx.core.view.setPadding
 import androidx.recyclerview.widget.RecyclerView
 
+
 class CycleIndicatorRecyclerAdapter(
-        context: Context,
-        var cycleFragmentStatePagerAdapter: CycleFragmentStatePagerAdapter
+    context: Context,
+    var style: RecyclerIndicatorStyle,
+    var cycleFragmentStatePagerAdapter: CycleFragmentStatePagerAdapter
 ) :
-        CycleRecyclerTabLayout.Adapter<CycleIndicatorRecyclerAdapter.IndicatorViewHolder>(context) {
+    CycleRecyclerTabLayout.Adapter<CycleIndicatorRecyclerAdapter.IndicatorViewHolder>(context) {
     var onItemListener: OnIndicatorItemListener? = null
-    var textTitleColor: Int = 0
-    protected var mTabSelectedTextColorSet: Boolean = false
-    protected var mTabSelectedTextColor: Int = 0
-    protected var mTabNormalTextColorSet: Boolean = false
-    protected var mTabNormalTextColor: Int = 0
+    private var mDrawableIndicator: GradientDrawable = GradientDrawable().apply {
+        setColor(style.mIndicatorPaint.color)
+        cornerRadius = style.mIndicatorCorner.toFloat()
+        setSize(5, 5)
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IndicatorViewHolder {
         val view = LayoutInflater.from(context).inflate(R.layout.indicator_view, parent, false)
         return IndicatorViewHolder(view)
     }
 
+    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     override fun onBindViewHolder(holderIndicator: IndicatorViewHolder, position: Int) {
         holderIndicator.onBind()
     }
@@ -39,46 +46,39 @@ class CycleIndicatorRecyclerAdapter(
         private val tvTitle: TextView = itemView.findViewById(R.id.tvTitle)
 
         init {
-            tvTitle.setTextColor(textTitleColor)
-        }
-
-        init {
+            tvTitle.setPadding(style.mTabPadding)
             itemView.setOnClickListener {
-                onItemListener?.onItemPositionClicked(adapterPosition, getRealPosition(adapterPosition))
+                onItemListener?.onItemPositionClicked(
+                    adapterPosition,
+                    getRealPosition(adapterPosition)
+                )
             }
         }
 
         @SuppressLint("SetTextI18n")
         fun onBind() {
-            val isTarget = getRealPosition(currentIndicatorPosition) == getRealPosition(adapterPosition)
-            if (isTarget && currentIndicatorPosition != adapterPosition) {
-                tvTitle.setBackgroundResource(R.drawable.bg_indicator)
+            val isActive =
+                getRealPosition(currentIndicatorPosition) == getRealPosition(adapterPosition)
+            if (isActive && currentIndicatorPosition != adapterPosition) {
+                tvTitle.background = mDrawableIndicator
             } else {
                 tvTitle.setBackgroundResource(android.R.color.transparent)
             }
             tvTitle.text = cycleFragmentStatePagerAdapter.getPageTitle(adapterPosition)
-            if (isTarget) {
-                tvTitle.setTextColor(mTabSelectedTextColor)
+            if (isActive) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    tvTitle.setTextAppearance(style.mTabTextAppearanceActive)
+                } else {
+                    tvTitle.setTextAppearance(context, style.mTabTextAppearanceActive)
+                }
             } else {
-                tvTitle.setTextColor(mTabNormalTextColor)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    tvTitle.setTextAppearance(style.mTabTextAppearanceInActive)
+                } else {
+                    tvTitle.setTextAppearance(context, style.mTabTextAppearanceInActive)
+                }
             }
         }
-    }
-
-    fun setTabSelectedTextColor(
-            tabSelectedTextColorSet: Boolean,
-            tabSelectedTextColor: Int
-    ) {
-        mTabSelectedTextColorSet = tabSelectedTextColorSet
-        mTabSelectedTextColor = tabSelectedTextColor
-    }
-
-    fun setTabNormalTextColor(
-            tabNormalTextColorSet: Boolean,
-            tabNormalTextColor: Int
-    ) {
-        mTabNormalTextColorSet = tabNormalTextColorSet
-        mTabNormalTextColor = tabNormalTextColor
     }
 
     fun getRealPosition(position: Int): Int {
