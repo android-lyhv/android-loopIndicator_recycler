@@ -18,7 +18,7 @@ class ItemFragment : Fragment() {
 
     companion object {
         const val INDEX_ARG = "INDEX_AGR"
-        fun newInstance(index: Int, title: String): ItemFragment {
+        fun newInstance(title: String): ItemFragment {
             return ItemFragment().apply {
                 arguments = Bundle().apply {
                     putString(INDEX_ARG, title)

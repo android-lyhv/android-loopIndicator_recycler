@@ -42,13 +42,13 @@ class ContentFragment : Fragment() {
         Toast.makeText(context, "Change Mode", Toast.LENGTH_SHORT).show()
         val titleItems: ArrayList<String> = ArrayList()
         if (isShowDefault) {
-            for (index in 0 until 1000) {
+            for (index in 0 until 5) {
                 titleItems.add("Tab $index")
             }
         } else {
             titleItems.add("マイアスリート")
             titleItems.add("ピックアップ")
-            for (index in 0 until 1000) {
+            for (index in 0 until 5) {
                 titleItems.add("Index $index")
             }
             titleItems.add("クリップ")

@@ -6,11 +6,8 @@
         <attr name="rtl_tabIndicatorCorner" format="dimension" />
         <attr name="rtl_tabIndicatorPadding" format="dimension" />
 
-        <attr name="rtl_tabBackground" format="reference" />
-
-        <attr name="rtl_tabTextAppearance" format="reference" />
-        <attr name="rtl_tabSelectedTextColor" format="color" />
-        <attr name="rtl_tabNormalTextColor" format="color"/>
+        <attr name="rtl_tabTextAppearanceActive" format="reference" />
+        <attr name="rtl_tabTextAppearanceInActive" format="reference" />
 
         <attr name="rtl_tabOnScreenLimit" format="integer" />
         <attr name="rtl_tabMinWidth" format="dimension" />
@@ -21,8 +18,8 @@
         <attr name="rtl_tabPaddingEnd" format="dimension" />
         <attr name="rtl_tabPaddingBottom" format="dimension" />
         <attr name="rtl_tabPadding" format="dimension" />
+        <attr name="rtl_tabHeight" format="dimension" />
 
-        <attr name="rtl_scrollEnabled" format="boolean" />
 
         <attr name="rtl_loopCount" format="integer" />
 

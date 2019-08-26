@@ -1,0 +1,18 @@
+<resources>
+
+    <style name="style_tabTextAppearance" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="android:textAlignment">center</item>
+        <item name="android:textSize">@dimen/_10sdp</item>
+    </style>
+    <!-- Base application theme. -->
+    <style name="style_tabTextAppearanceActive" parent="@style/style_tabTextAppearance">
+        <!-- Customize your theme here. -->
+        <item name="android:background">@null</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="style_tabTextAppearanceInActive" parent="@style/style_tabTextAppearance">
+        <item name="android:textColor">@android:color/holo_blue_dark</item>
+    </style>
+</resources>
