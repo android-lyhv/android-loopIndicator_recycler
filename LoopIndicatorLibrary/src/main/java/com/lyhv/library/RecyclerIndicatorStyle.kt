@@ -25,7 +25,7 @@ class RecyclerIndicatorStyle {
     var mTabPaddingBottom: Int = 0
     var mIndicatorHeight: Int = 0
     var mIndicatorCorner: Int = 0
-    var mIndicatorPadding: Int = 0
+    var mTabHeight: Int = 0
     var mIndicatorLoopCount: Int = IndicatorConfig.LOOP_COUNT
 
     fun applyStyle(context: Context, attrs: AttributeSet, defStyle: Int) {
@@ -44,8 +44,8 @@ class RecyclerIndicatorStyle {
         )
 
 
-        mIndicatorPadding = typedArray.getDimensionPixelSize(
-            R.styleable.rtl_RecyclerTabLayout_rtl_tabIndicatorPadding,
+        mTabHeight = typedArray.getDimensionPixelSize(
+            R.styleable.rtl_RecyclerTabLayout_rtl_tabHeight,
             0
         )
 

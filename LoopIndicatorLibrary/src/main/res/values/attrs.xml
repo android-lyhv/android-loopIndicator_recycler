@@ -18,6 +18,8 @@
         <attr name="rtl_tabPaddingEnd" format="dimension" />
         <attr name="rtl_tabPaddingBottom" format="dimension" />
         <attr name="rtl_tabPadding" format="dimension" />
+        <attr name="rtl_tabHeight" format="dimension" />
+
 
         <attr name="rtl_loopCount" format="integer" />
 

@@ -20,9 +20,10 @@
         android:id="@+id/myRecyclerTabLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:rtl_tabHeight="30dp"
         app:rtl_tabIndicatorColor="@android:color/holo_blue_light"
         app:rtl_tabIndicatorCorner="15dp"
-        app:rtl_tabIndicatorHeight="25dp"
+        app:rtl_tabIndicatorHeight="30dp"
         app:rtl_tabPadding="5dp"
         app:rtl_tabTextAppearanceActive="@style/style_tabAppearanceActive"
         app:rtl_tabTextAppearanceInActive="@style/style_tabAppearanceInActive" />

@@ -7,8 +7,8 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.annotation.RequiresApi
 import androidx.core.view.setPadding
 import androidx.recyclerview.widget.RecyclerView
 
@@ -23,7 +23,6 @@ class CycleIndicatorRecyclerAdapter(
     private var mDrawableIndicator: GradientDrawable = GradientDrawable().apply {
         setColor(style.mIndicatorPaint.color)
         cornerRadius = style.mIndicatorCorner.toFloat()
-        setSize(5, 5)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): IndicatorViewHolder {
@@ -31,7 +30,6 @@ class CycleIndicatorRecyclerAdapter(
         return IndicatorViewHolder(view)
     }
 
-    @RequiresApi(Build.VERSION_CODES.JELLY_BEAN)
     override fun onBindViewHolder(holderIndicator: IndicatorViewHolder, position: Int) {
         holderIndicator.onBind()
     }
@@ -46,7 +44,13 @@ class CycleIndicatorRecyclerAdapter(
         private val tvTitle: TextView = itemView.findViewById(R.id.tvTitle)
 
         init {
-            tvTitle.setPadding(style.mTabPadding)
+            itemView.apply {
+                setPadding(style.mTabPadding)
+                layoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    style.mTabHeight
+                )
+            }
             itemView.setOnClickListener {
                 onItemListener?.onItemPositionClicked(
                     adapterPosition,

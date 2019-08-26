@@ -10,6 +10,7 @@
 
     <style name="style_tabTextAppearance" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:textAlignment">center</item>
+        <item name="android:fontFamily">@font/aclonica</item>
         <item name="android:textSize">12dp</item>
     </style>
 
