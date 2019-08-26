@@ -1,5 +1,6 @@
 Loop Indicator RecyclerView
 =====
+[ ![Download](https://api.bintray.com/packages/hovanlybkit/android-cycle_indicator/loopindicator/images/download.svg?version=1.0.0) ](https://bintray.com/hovanlybkit/android-cycle_indicator/loopindicator/1.0.0/link)
 
 Gradle:
 
