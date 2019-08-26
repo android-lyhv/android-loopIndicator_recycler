@@ -61,6 +61,7 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
     private var mViewPager: ViewPager? = null
     private var mAdapter: Adapter<*>? = null
     // Scroll Config
+    protected var mIndicatorLoopCount = IndicatorConfig.LOOP_COUNT
     protected var mIndicatorPosition: Int = 0
     private var mIndicatorGap: Int = 0
     private var mIndicatorScroll: Int = 0
@@ -128,6 +129,10 @@ open class CycleRecyclerTabLayout @JvmOverloads constructor(
         mTabTextAppearance = typedArray.getResourceId(
             R.styleable.rtl_RecyclerTabLayout_rtl_tabTextAppearance,
             R.style.rtl_RecyclerTabLayout_Tab
+        )
+        mIndicatorLoopCount = typedArray.getInteger(
+            R.styleable.rtl_RecyclerTabLayout_rtl_loopCount,
+            IndicatorConfig.LOOP_COUNT
         )
 
         mTabPaddingBottom = typedArray
