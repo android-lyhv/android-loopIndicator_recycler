@@ -44,18 +44,36 @@ class CycleIndicatorRecyclerAdapter(
         private val tvTitle: TextView = itemView.findViewById(R.id.tvTitle)
 
         init {
-            itemView.apply {
-                setPadding(style.mTabPadding)
-                layoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    style.mTabHeight
-                )
-            }
+            applyStyle(itemView)
             itemView.setOnClickListener {
                 onItemListener?.onItemPositionClicked(
                     adapterPosition,
                     getRealPosition(adapterPosition)
                 )
+            }
+        }
+
+        private fun applyStyle(itemView: View) {
+            itemView.apply {
+                layoutParams = if (style.mTabPadding > 0) {
+                    setPadding(style.mTabPadding)
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        style.mTabHeight
+                    )
+                } else {
+                    setPadding(
+                        style.mTabPaddingStart,
+                        style.mTabPaddingTop,
+                        style.mTabPaddingEnd,
+                        style.mTabPaddingBottom
+                    )
+                    LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        style.mTabHeight
+                    )
+                }
+
             }
         }
 
