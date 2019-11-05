@@ -24,7 +24,10 @@
         app:rtl_tabIndicatorColor="@android:color/holo_blue_light"
         app:rtl_tabIndicatorCorner="15dp"
         app:rtl_tabIndicatorHeight="30dp"
-        app:rtl_tabPadding="5dp"
+        app:rtl_tabPaddingBottom="5dp"
+        app:rtl_tabPaddingEnd="10dp"
+        app:rtl_tabPaddingStart="10dp"
+        app:rtl_tabPaddingTop="5dp"
         app:rtl_tabTextAppearanceActive="@style/style_tabAppearanceActive"
         app:rtl_tabTextAppearanceInActive="@style/style_tabAppearanceInActive" />
 
