@@ -20,6 +20,8 @@ class RecyclerIndicatorStyle {
     var mTabMaxWidth: Int = 0
     var mTabPaddingStart: Int = 0
     var mTabPadding: Int = 0
+    var mTabMarginTop: Int = 0
+    var mTabMarginBottom: Int = 0
     var mTabPaddingTop: Int = 0
     var mTabPaddingEnd: Int = 0
     var mTabPaddingBottom: Int = 0
@@ -30,72 +32,78 @@ class RecyclerIndicatorStyle {
 
     fun applyStyle(context: Context, attrs: AttributeSet, defStyle: Int) {
         val typedArray = context.obtainStyledAttributes(
-            attrs, R.styleable.rtl_RecyclerTabLayout,
-            defStyle, R.style.rtl_RecyclerTabLayout
+                attrs, R.styleable.rtl_RecyclerTabLayout,
+                defStyle, R.style.rtl_RecyclerTabLayout
         )
         mIndicatorPaint.color = typedArray.getColor(
-            R.styleable
-                .rtl_RecyclerTabLayout_rtl_tabIndicatorColor, 0
+                R.styleable
+                        .rtl_RecyclerTabLayout_rtl_tabIndicatorColor, 0
         )
 
         mIndicatorHeight = typedArray.getDimensionPixelSize(
-            R.styleable
-                .rtl_RecyclerTabLayout_rtl_tabIndicatorHeight, 0
+                R.styleable
+                        .rtl_RecyclerTabLayout_rtl_tabIndicatorHeight, 0
         )
 
 
         mTabHeight = typedArray.getDimensionPixelSize(
-            R.styleable.rtl_RecyclerTabLayout_rtl_tabHeight,
-            0
+                R.styleable.rtl_RecyclerTabLayout_rtl_tabHeight,
+                0
         )
 
         mIndicatorCorner = typedArray.getDimensionPixelSize(
-            R.styleable
-                .rtl_RecyclerTabLayout_rtl_tabIndicatorCorner, 0
+                R.styleable
+                        .rtl_RecyclerTabLayout_rtl_tabIndicatorCorner, 0
         )
 
         mTabTextAppearanceActive = typedArray.getResourceId(
-            R.styleable.rtl_RecyclerTabLayout_rtl_tabTextAppearanceActive,
-            R.style.style_tabTextAppearanceActive
+                R.styleable.rtl_RecyclerTabLayout_rtl_tabTextAppearanceActive,
+                R.style.style_tabTextAppearanceActive
         )
         mTabTextAppearanceInActive = typedArray.getResourceId(
-            R.styleable.rtl_RecyclerTabLayout_rtl_tabTextAppearanceInActive,
-            R.style.style_tabTextAppearanceInActive
+                R.styleable.rtl_RecyclerTabLayout_rtl_tabTextAppearanceInActive,
+                R.style.style_tabTextAppearanceInActive
         )
         mIndicatorLoopCount = typedArray.getInteger(
-            R.styleable.rtl_RecyclerTabLayout_rtl_loopCount,
-            IndicatorConfig.LOOP_COUNT
+                R.styleable.rtl_RecyclerTabLayout_rtl_loopCount,
+                IndicatorConfig.LOOP_COUNT
         )
 
         mTabPaddingBottom = typedArray
-            .getDimensionPixelSize(R.styleable.rtl_RecyclerTabLayout_rtl_tabPadding, 0)
+                .getDimensionPixelSize(R.styleable.rtl_RecyclerTabLayout_rtl_tabPadding, 0)
         mTabPaddingEnd = mTabPaddingBottom
         mTabPaddingTop = mTabPaddingEnd
         mTabPaddingStart = mTabPaddingTop
         mTabPaddingStart = typedArray.getDimensionPixelSize(
-            R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingStart, mTabPaddingStart
+                R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingStart, mTabPaddingStart
         )
         mTabPaddingTop = typedArray.getDimensionPixelSize(
-            R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingTop, mTabPaddingTop
+                R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingTop, mTabPaddingTop
         )
         mTabPaddingEnd = typedArray.getDimensionPixelSize(
-            R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingEnd, mTabPaddingEnd
+                R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingEnd, mTabPaddingEnd
         )
         mTabPaddingBottom = typedArray.getDimensionPixelSize(
-            R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingBottom, mTabPaddingBottom
+                R.styleable.rtl_RecyclerTabLayout_rtl_tabPaddingBottom, mTabPaddingBottom
         )
         mTabPadding = typedArray.getDimensionPixelSize(
-            R.styleable.rtl_RecyclerTabLayout_rtl_tabPadding, 0
+                R.styleable.rtl_RecyclerTabLayout_rtl_tabPadding, 0
+        )
+        mTabMarginTop = typedArray.getDimensionPixelSize(
+                R.styleable.rtl_RecyclerTabLayout_rtl_tabMarginTop, 0
+        )
+        mTabMarginBottom = typedArray.getDimensionPixelSize(
+                R.styleable.rtl_RecyclerTabLayout_rtl_tabMarginBottom, 0
         )
         mTabOnScreenLimit = typedArray.getInteger(
-            R.styleable.rtl_RecyclerTabLayout_rtl_tabOnScreenLimit, 0
+                R.styleable.rtl_RecyclerTabLayout_rtl_tabOnScreenLimit, 0
         )
         if (mTabOnScreenLimit == 0) {
             mTabMinWidth = typedArray.getDimensionPixelSize(
-                R.styleable.rtl_RecyclerTabLayout_rtl_tabMinWidth, 0
+                    R.styleable.rtl_RecyclerTabLayout_rtl_tabMinWidth, 0
             )
             mTabMaxWidth = typedArray.getDimensionPixelSize(
-                R.styleable.rtl_RecyclerTabLayout_rtl_tabMaxWidth, 0
+                    R.styleable.rtl_RecyclerTabLayout_rtl_tabMaxWidth, 0
             )
         }
         typedArray.recycle()
